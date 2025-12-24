@@ -6,8 +6,8 @@
  */
 
 // SExp Runtime
-export { SExpRuntime, createSExpActionHandler } from './SExpRuntime'
-export type { IMinimalStore, IMinimalSurface } from './SExpRuntime'
+export { SExpRuntime, createSExpActionHandler } from "./SExpRuntime";
+export type { IMinimalStore, IMinimalSurface } from "./SExpRuntime";
 
 // Re-export seval utilities for convenience
 export {
@@ -20,7 +20,7 @@ export {
     defaultPrimitives,
     deserializeSExpr,
     serializeSExpr,
-} from '@seval-ui/sexp'
+} from "@seval-ui/sexp";
 
 // Re-export seval types
 export type {
@@ -30,4 +30,4 @@ export type {
     PrimitiveFunction,
     SExpr,
     SerializedSExpr,
-} from '@seval-ui/sexp'
+} from "@seval-ui/sexp";

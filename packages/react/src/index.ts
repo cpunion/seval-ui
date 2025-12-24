@@ -22,31 +22,31 @@
 
 // A2UI Protocol Types
 export type {
-    ComponentDictionary,
-    ComponentDefinition,
-    SurfaceUpdateMessage,
-    DataModelUpdateMessage,
-    BeginRenderingMessage,
-    DeleteSurfaceMessage,
-    A2UIMessage,
-    BoundValue,
-    ActionContextEntry,
-    ActionDefinition,
-    UserActionPayload,
-    SurfaceSnapshot,
-    ValueEntry,
+	ComponentDictionary,
+	ComponentDefinition,
+	SurfaceUpdateMessage,
+	DataModelUpdateMessage,
+	BeginRenderingMessage,
+	DeleteSurfaceMessage,
+	A2UIMessage,
+	BoundValue,
+	ActionContextEntry,
+	ActionDefinition,
+	UserActionPayload,
+	SurfaceSnapshot,
+	ValueEntry,
 } from './a2ui-types'
 
 // A2UI Utilities
 export {
-    decodePointer,
-    getAtPointer,
-    ensurePointer,
-    encodePointerSegment,
-    joinPointer,
-    valueEntriesToObject,
-    applyEntries,
-    resolveBoundValue,
+	decodePointer,
+	getAtPointer,
+	ensurePointer,
+	encodePointerSegment,
+	joinPointer,
+	valueEntriesToObject,
+	applyEntries,
+	resolveBoundValue,
 } from './utils'
 
 // A2UI Component Catalog
@@ -56,14 +56,14 @@ export { defaultRegistry, mergeRegistries } from './catalog'
 // A2UI Context & Provider
 export type { IA2UISurface, IA2UIContextStore, A2UIProviderProps } from './context'
 export {
-    createA2UIContextStore,
-    A2UIProvider,
-    useA2UIContextStore,
-    useA2UIRegistry,
-    useSurfaceIds,
-    useA2UISurface,
-    useA2UIIngest,
-    useRendererContext,
+	createA2UIContextStore,
+	A2UIProvider,
+	useA2UIContextStore,
+	useA2UIRegistry,
+	useSurfaceIds,
+	useA2UISurface,
+	useA2UIIngest,
+	useRendererContext,
 } from './context'
 
 // A2UI SurfaceView

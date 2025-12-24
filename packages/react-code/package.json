@@ -1,48 +1,48 @@
 {
-  "name": "@seval-ui/react-code",
-  "version": "0.1.0",
-  "description": "SExpRuntime for @seval-ui/react with seval/minijs support",
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "name": "@seval-ui/react-code",
+    "version": "0.1.0",
+    "description": "SExpRuntime for @seval-ui/react with seval/minijs support",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": ["dist"],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "bun test",
+        "lint": "biome check .",
+        "lint:fix": "biome check --write .",
+        "format": "biome format --write .",
+        "prepublishOnly": "bun run build"
+    },
+    "keywords": ["seval-ui", "react", "seval", "minijs", "code-component"],
+    "author": "cpunion",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aspect-build/seval-ui.git",
+        "directory": "packages/react-code"
+    },
+    "dependencies": {
+        "@seval-ui/sexp": "workspace:*",
+        "@seval-ui/seval": "workspace:*"
+    },
+    "peerDependencies": {
+        "react": ">=18.0.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@types/bun": "latest",
+        "@types/react": "^19.2.5",
+        "@seval-ui/react": "workspace:*",
+        "react": "^19.2.0",
+        "typescript": "^5.7.2"
     }
-  },
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "bun test",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "prepublishOnly": "bun run build"
-  },
-  "keywords": ["seval-ui", "react", "seval", "minijs", "code-component"],
-  "author": "cpunion",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aspect-build/seval-ui.git",
-    "directory": "packages/react-code"
-  },
-  "dependencies": {
-    "@seval-ui/sexp": "workspace:*",
-    "@seval-ui/seval": "workspace:*"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/bun": "latest",
-    "@types/react": "^19.2.5",
-    "@seval-ui/react": "workspace:*",
-    "react": "^19.2.0",
-    "typescript": "^5.7.2"
-  }
 }

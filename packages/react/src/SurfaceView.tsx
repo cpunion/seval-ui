@@ -2,34 +2,34 @@
  * A2UI SurfaceView Component
  */
 
-import React from 'react'
-import { useRendererContext, useA2UISurface } from './context'
+import type React from 'react'
+import { useA2UISurface, useRendererContext } from './context'
 
 export interface SurfaceViewProps {
-    surfaceId: string
+	surfaceId: string
 }
 
 export function SurfaceView({ surfaceId }: SurfaceViewProps) {
-    const surface = useA2UISurface(surfaceId)
-    const rendererContext = useRendererContext(surface)
+	const surface = useA2UISurface(surfaceId)
+	const rendererContext = useRendererContext(surface)
 
-    if (!surface || !surface.root) {
-        return null
-    }
+	if (!surface || !surface.root) {
+		return null
+	}
 
-    const styleProps: React.CSSProperties = {}
-    if (surface.styles) {
-        for (const [key, value] of Object.entries(surface.styles)) {
-            if (typeof value === 'string') {
-                ; (styleProps as Record<string, string>)[`--a2ui-${key}`] = value
-            }
-        }
-    }
+	const styleProps: React.CSSProperties = {}
+	if (surface.styles) {
+		for (const [key, value] of Object.entries(surface.styles)) {
+			if (typeof value === 'string') {
+				;(styleProps as Record<string, string>)[`--a2ui-${key}`] = value
+			}
+		}
+	}
 
-    const tree = rendererContext.renderComponent(surface.root)
-    return (
-        <div className="a2ui-surface-root" style={styleProps}>
-            {tree}
-        </div>
-    )
+	const tree = rendererContext.renderComponent(surface.root)
+	return (
+		<div className="a2ui-surface-root" style={styleProps}>
+			{tree}
+		</div>
+	)
 }

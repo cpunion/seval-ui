@@ -29,11 +29,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Format check
+        run: pnpm -r run format --check || true
+
+      - name: Lint
+        run: pnpm -r run lint
+
       - name: Build packages
         run: pnpm -r run build
 
       - name: Run tests
         run: pnpm -r run test
-
-      - name: Lint
-        run: pnpm -r run lint
