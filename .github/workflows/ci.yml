@@ -40,3 +40,6 @@ jobs:
 
       - name: Run tests
         run: pnpm -r run test
+        env:
+          # Increase Node.js stack size for MiniJS compiler (recursive sexp evaluation)
+          NODE_OPTIONS: --stack-size=8192
