@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import { type Plugin, defineConfig } from 'vite'
 
 const nodeModulesPath = path.resolve('./node_modules')
+const packagesPath = path.resolve('../')
 
 // Plugin to handle .seval and .sexp files as raw text
 function sevalRawPlugin(): Plugin {
@@ -25,10 +26,14 @@ export default defineConfig({
 		alias: {
 			react: path.join(nodeModulesPath, 'react'),
 			'react-dom': path.join(nodeModulesPath, 'react-dom'),
+			// Use source directly for hot reload during development
+			'@seval-ui/react-code': path.join(packagesPath, 'react-code/src/index.ts'),
+			'@seval-ui/react': path.join(packagesPath, 'react/src/index.ts'),
+			'@seval-ui/seval': path.join(packagesPath, 'seval/src'),
 		},
 	},
 	optimizeDeps: {
 		include: ['react', 'react-dom'],
-		exclude: ['@seval-ui/seval'],
+		exclude: ['@seval-ui/seval', '@seval-ui/react', '@seval-ui/react-code'],
 	},
 })

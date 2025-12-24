@@ -256,6 +256,42 @@
         {
           "key": "forgot",
           "valueNumber": 0
+        },
+        {
+          "key": "currentWord",
+          "valueString": "ephemeral"
+        },
+        {
+          "key": "currentPhonetic",
+          "valueString": "/ɪˈfem(ə)rəl/"
+        },
+        {
+          "key": "currentMeaning",
+          "valueString": "lasting for a very short time"
+        },
+        {
+          "key": "currentExample",
+          "valueString": "The ephemeral beauty of cherry blossoms"
+        },
+        {
+          "key": "progressText",
+          "valueString": "Card 1 of 5"
+        },
+        {
+          "key": "studiedText",
+          "valueString": "Studied: 0"
+        },
+        {
+          "key": "rememberedText",
+          "valueString": "Remembered: 0"
+        },
+        {
+          "key": "forgotText",
+          "valueString": "Forgot: 0"
+        },
+        {
+          "key": "totalText",
+          "valueString": "Total words: 5"
         }
       ]
     }
@@ -279,6 +315,7 @@
             "Column": {
               "children": {
                 "explicitList": [
+                  "code",
                   "tab-bar",
                   "study-view",
                   "stats-view"

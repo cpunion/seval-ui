@@ -2,50 +2,114 @@
  * Tests for @seval-ui/react-code
  */
 import { describe, expect, it } from "bun:test";
-import { createEvaluator, defaultPrimitives, evalString, parse, stringify } from "@seval-ui/sexp";
-import { SExpRuntime } from "./SExpRuntime";
+import type { IMinimalStore, IMinimalSurface } from "./SevalRuntime";
+import { SevalRuntime, compileSeval, executeSeval } from "./index";
 
-describe("SExpRuntime", () => {
+// Mock store and surface for testing
+function createMockStore(): { store: IMinimalStore; surface: IMinimalSurface } {
+    const dataModel: Record<string, unknown> = {
+        display: "0",
+        memory: "0",
+        operator: "",
+        waitingForOperand: true,
+        history: "",
+    };
+
+    const components = new Map<string, { id: string; component: Record<string, unknown> }>();
+    components.set("code", {
+        id: "code",
+        component: {
+            Code: {
+                code: `{
+                    action_test() { [["display", "42"]] }
+                }`,
+                lang: "seval",
+            },
+        },
+    });
+
+    const surface: IMinimalSurface = {
+        dataModel,
+        version: 0,
+        getComponent: (id) => components.get(id),
+        setDataModel: (model) => Object.assign(dataModel, model),
+        incrementVersion: () => {
+            surface.version++;
+        },
+    };
+
+    const store: IMinimalStore = {
+        surfaces: {
+            get: (_id: string) => surface,
+        },
+    };
+
+    return { store, surface };
+}
+
+describe("SevalRuntime", () => {
     it("creates a runtime instance", () => {
-        const runtime = new SExpRuntime();
+        const { store } = createMockStore();
+        const runtime = new SevalRuntime(store, "test");
         expect(runtime).toBeDefined();
     });
 
-    it("initializes with custom options", () => {
-        const runtime = new SExpRuntime({
-            maxDepth: 500,
-            debug: false,
-        });
-        expect(runtime).toBeDefined();
+    it("loads code component and handles action", () => {
+        const { store, surface } = createMockStore();
+        const runtime = new SevalRuntime(store, "test");
+
+        runtime.loadCodeComponent();
+
+        // Should have loaded the environment
+        const env = runtime.getEnvironment();
+        expect(env).toBeDefined();
+        expect(env).not.toBeNull();
+
+        // Handle action
+        runtime.handleAction("test");
+
+        // Should have updated display
+        expect(surface.dataModel.display).toBe("42");
+    });
+
+    it("handles __inputBinding action for direct updates", () => {
+        const { store, surface } = createMockStore();
+        const runtime = new SevalRuntime(store, "test");
+
+        runtime.handleAction("__inputBinding", { path: "/display", value: "999" });
+
+        expect(surface.dataModel.display).toBe("999");
     });
 });
 
-describe("re-exported seval utilities", () => {
-    it("evalString evaluates expressions", () => {
-        expect(evalString("(+ 1 2)")).toBe(3);
-        expect(evalString("(* 3 4)")).toBe(12);
+describe("seval utilities", () => {
+    it("compileSeval creates environment with functions", () => {
+        const env = compileSeval(`{
+            add(a, b) { a + b },
+            double(x) { x * 2 }
+        }`);
+
+        expect(env).toBeDefined();
+        expect(env.add).toBeDefined();
+        expect(env.double).toBeDefined();
     });
 
-    it("parse and stringify round-trip", () => {
-        const code = "(define x 42)";
-        const parsed = parse(code);
-        const result = stringify(parsed);
-        expect(result).toContain("define");
-        expect(result).toContain("42");
+    it("executeSeval calls functions", () => {
+        const env = compileSeval(`{
+            add(a, b) { a + b },
+            greet(name) { "Hello, " + name }
+        }`);
+
+        expect(executeSeval(env, "add", [5, 3])).toBe(8);
+        expect(executeSeval(env, "greet", ["World"])).toBe("Hello, World");
     });
 
-    it("createEvaluator returns evaluator with primitives", () => {
-        const evaluator = createEvaluator({
-            primitives: {
-                double: (args) => (args[0] as number) * 2,
-            },
-        });
-        const result = evaluator.evalString("(double 21)");
-        expect(result).toBe(42);
-    });
+    it("executeSeval with context", () => {
+        const env = compileSeval(`{
+            getAge() { get(context, "age") }
+        }`);
 
-    it("defaultPrimitives is available", () => {
-        expect(defaultPrimitives).toBeDefined();
-        expect(typeof defaultPrimitives["+"]).toBe("function");
+        const result = executeSeval(env, "getAge", [], { context: { age: 25 } });
+        expect(result).toBe(25);
     });
 });

@@ -13,20 +13,20 @@ describe('VocabularyPage', () => {
 
 		await within(view.container).findByRole('heading', { name: /vocabulary flashcards/i })
 		expect(
-			await within(view.container).findByText('ephemeral', undefined, { timeout: 30000 }),
+			await within(view.container).findByText('ephemeral', undefined, { timeout: 10000 }),
 		).toBeInTheDocument()
 		expect(await within(view.container).findByText('Card 1 of 5')).toBeInTheDocument()
 		expect(await within(view.container).findByText('Studied: 0')).toBeInTheDocument()
 		expect(await within(view.container).findByText('Remembered: 0')).toBeInTheDocument()
 		expect(await within(view.container).findByText('Forgot: 0')).toBeInTheDocument()
-	}, 35000)
+	}, 15000)
 
 	it('advances to the next card after reviewing with a quality score', async () => {
 		const view = renderVocabulary()
 		const user = userEvent.setup()
 
-		// Wait longer for seval compiler initialization
-		await within(view.container).findByText('ephemeral', undefined, { timeout: 45000 })
+		// Wait for initial render
+		await within(view.container).findByText('ephemeral', undefined, { timeout: 10000 })
 
 		await user.click(await within(view.container).findByRole('button', { name: 'Show Answer' }))
 		await user.click(await within(view.container).findByRole('button', { name: 'Good' }))
@@ -35,14 +35,14 @@ describe('VocabularyPage', () => {
 			() => {
 				expect(within(view.container).getByText('ubiquitous')).toBeInTheDocument()
 			},
-			{ timeout: 15000 },
+			{ timeout: 5000 },
 		)
 
 		await waitFor(
 			() => {
 				expect(within(view.container).getByText('Card 2 of 5')).toBeInTheDocument()
 			},
-			{ timeout: 10000 },
+			{ timeout: 5000 },
 		)
 
 		await waitFor(
@@ -51,7 +51,7 @@ describe('VocabularyPage', () => {
 				expect(within(view.container).getByText('Remembered: 1')).toBeInTheDocument()
 				expect(within(view.container).getByText('Forgot: 0')).toBeInTheDocument()
 			},
-			{ timeout: 10000 },
+			{ timeout: 5000 },
 		)
-	}, 60000)
+	}, 20000)
 })

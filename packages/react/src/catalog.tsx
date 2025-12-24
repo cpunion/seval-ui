@@ -107,6 +107,7 @@ export const defaultRegistry: ComponentRegistry = {
 					entries.push({ key: index.toString(), path: joinPointer(pointer, index.toString()) })
 				})
 			} else if (data && typeof data === 'object') {
+				// biome-ignore lint/complexity/noForEach: Simpler for this use case
 				Object.keys(data as Record<string, unknown>).forEach((key) => {
 					entries.push({ key, path: joinPointer(pointer, key) })
 				})
@@ -170,6 +171,7 @@ export const defaultRegistry: ComponentRegistry = {
 					entries.push({ key: index.toString(), path: joinPointer(pointer, index.toString()) })
 				})
 			} else if (data && typeof data === 'object') {
+				// biome-ignore lint/complexity/noForEach: Simpler for this use case
 				Object.keys(data as Record<string, unknown>).forEach((key) => {
 					entries.push({ key, path: joinPointer(pointer, key) })
 				})
@@ -232,6 +234,7 @@ export const defaultRegistry: ComponentRegistry = {
 					entries.push({ key: index.toString(), path: joinPointer(pointer, index.toString()) })
 				})
 			} else if (data && typeof data === 'object') {
+				// biome-ignore lint/complexity/noForEach: Simpler for this use case
 				Object.keys(data as Record<string, unknown>).forEach((key) => {
 					entries.push({ key, path: joinPointer(pointer, key) })
 				})

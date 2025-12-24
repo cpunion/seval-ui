@@ -1,33 +1,19 @@
 /**
- * a2ui-react-code - Code component and SExpRuntime for a2ui-react
+ * @seval-ui/react-code - SevalRuntime for @seval-ui/react
  *
- * This package provides S-expression runtime support for a2ui-react,
- * keeping the main a2ui-react package decoupled from seval/minijs.
+ * This package provides Seval runtime support for a2ui-react,
+ * keeping the main a2ui-react package decoupled from seval.
  */
 
-// SExp Runtime
-export { SExpRuntime, createSExpActionHandler } from "./SExpRuntime";
-export type { IMinimalStore, IMinimalSurface } from "./SExpRuntime";
+// Seval Runtime
+export { SevalRuntime, createSevalActionHandler } from "./SevalRuntime";
+export type { IMinimalStore, IMinimalSurface } from "./SevalRuntime";
+
+// Code Component for A2UI Catalog
+export { CodeRenderer, createCodeRegistry as createCodeComponent } from "./CodeComponent";
 
 // Re-export seval utilities for convenience
-export {
-    evalString,
-    evaluate,
-    parse,
-    stringify,
-    createEvaluator,
-    isLambda,
-    defaultPrimitives,
-    deserializeSExpr,
-    serializeSExpr,
-} from "@seval-ui/sexp";
+export { compileSeval, executeSeval, Tokenizer, Parser, Interpreter } from "@seval-ui/seval/seval";
 
 // Re-export seval types
-export type {
-    Value,
-    Environment,
-    LambdaFunction,
-    PrimitiveFunction,
-    SExpr,
-    SerializedSExpr,
-} from "@seval-ui/sexp";
+export type { Value, Environment, SFunction } from "@seval-ui/seval/seval";

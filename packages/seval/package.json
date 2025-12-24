@@ -13,6 +13,10 @@
 		"./source": {
 			"types": "./index.d.ts",
 			"default": "./compiler.sexp"
+		},
+		"./seval": {
+			"types": "./seval.d.ts",
+			"default": "./dist/seval.js"
 		}
 	},
 	"files": ["compiler.sexp", "index.d.ts"],

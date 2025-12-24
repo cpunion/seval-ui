@@ -1,7 +1,7 @@
 {
     "name": "@seval-ui/react-code",
     "version": "0.1.0",
-    "description": "SExpRuntime for @seval-ui/react with seval/minijs support",
+    "description": "SevalRuntime for @seval-ui/react with seval support",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -17,12 +17,13 @@
         "build": "tsc",
         "dev": "tsc --watch",
         "test": "bun test",
+        "coverage": "bun test --coverage",
         "lint": "biome check .",
         "lint:fix": "biome check --write .",
         "format": "biome format --write .",
         "prepublishOnly": "bun run build"
     },
-    "keywords": ["seval-ui", "react", "seval", "minijs", "code-component"],
+    "keywords": ["seval-ui", "react", "seval", "code-component"],
     "author": "cpunion",
     "license": "MIT",
     "repository": {
@@ -31,7 +32,6 @@
         "directory": "packages/react-code"
     },
     "dependencies": {
-        "@seval-ui/sexp": "workspace:*",
         "@seval-ui/seval": "workspace:*"
     },
     "peerDependencies": {
