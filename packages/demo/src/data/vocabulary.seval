@@ -1,5 +1,6 @@
 {
   getWordAt(idx) { nth(words, idx) },
+  getCurrentWord() { nth(words, currentIndex) },
 
   calcNewEf(oldEf, quality) {
     max(1.3, min(2.5, oldEf + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
@@ -19,14 +20,15 @@
     [["showAnswer", true]]
   },
 
+  // Simplified: use merge with just the changed fields
   action_reviewWord() {
     [
-      ["words", updateAt(words, currentIndex, merge(nth(words, currentIndex), obj(
-        "easeFactor", calcNewEf(get(nth(words, currentIndex), "easeFactor"), get(context, "quality")),
-        "interval", calcNewInterval(get(nth(words, currentIndex), "interval"), get(nth(words, currentIndex), "easeFactor"), get(nth(words, currentIndex), "reviewCount"), get(context, "quality")),
-        "status", get(context, "quality") == 0 ? "learning" : get(nth(words, currentIndex), "reviewCount") >= 3 ? "mastered" : "learning",
-        "reviewCount", get(nth(words, currentIndex), "reviewCount") + 1,
-        "nextReview", now() + calcNewInterval(get(nth(words, currentIndex), "interval"), get(nth(words, currentIndex), "easeFactor"), get(nth(words, currentIndex), "reviewCount"), get(context, "quality")) * 86400000
+      ["words", updateAt(words, currentIndex, merge(getCurrentWord(), list(
+        list("easeFactor", calcNewEf(get(getCurrentWord(), "easeFactor"), get(context, "quality"))),
+        list("interval", calcNewInterval(get(getCurrentWord(), "interval"), get(getCurrentWord(), "easeFactor"), get(getCurrentWord(), "reviewCount"), get(context, "quality"))),
+        list("status", get(context, "quality") == 0 ? "learning" : "learning"),
+        list("reviewCount", get(getCurrentWord(), "reviewCount") + 1),
+        list("nextReview", now() + 86400000)
       )))],
       ["currentIndex", nextWordIndex(currentIndex)],
       ["showAnswer", false],
@@ -38,10 +40,10 @@
 
   updateDerived() {
     [
-      ["currentWord", get(nth(words, currentIndex), "word")],
-      ["currentPhonetic", get(nth(words, currentIndex), "phonetic")],
-      ["currentMeaning", get(nth(words, currentIndex), "meaning")],
-      ["currentExample", get(nth(words, currentIndex), "example")],
+      ["currentWord", get(getCurrentWord(), "word")],
+      ["currentPhonetic", get(getCurrentWord(), "phonetic")],
+      ["currentMeaning", get(getCurrentWord(), "meaning")],
+      ["currentExample", get(getCurrentWord(), "example")],
       ["progressText", "Card " + (currentIndex + 1) + " of " + length(words)],
       ["studiedText", "Studied: " + studied],
       ["rememberedText", "Remembered: " + remembered],

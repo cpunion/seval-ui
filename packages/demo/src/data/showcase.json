@@ -242,6 +242,7 @@
             "Column": {
               "children": {
                 "explicitList": [
+                  "code",
                   "header",
                   "tabs-section"
                 ]

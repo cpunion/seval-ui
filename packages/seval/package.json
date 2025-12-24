@@ -13,23 +13,29 @@
 		"./source": {
 			"types": "./index.d.ts",
 			"default": "./compiler.sexp"
+		},
+		"./seval": {
+			"types": "./seval.d.ts",
+			"default": "./dist/seval.js"
 		}
 	},
-	"files": ["compiler.sexp", "index.d.ts"],
+	"files": ["compiler.sexp", "index.d.ts", "seval.d.ts", "dist"],
 	"scripts": {
+		"build": "tsc -p tsconfig.seval.json",
 		"test": "bun test",
 		"test:watch": "bun test --watch",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"format": "biome format --write .",
-		"coverage": "bun test --coverage"
+		"coverage": "bun test --coverage",
+		"prepublishOnly": "pnpm run build"
 	},
 	"keywords": ["seval", "s-expression", "self-hosted", "compiler"],
 	"author": "cpunion",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aspect-build/seval-ui.git",
+		"url": "https://github.com/cpunion/seval-ui.git",
 		"directory": "packages/seval"
 	},
 	"dependencies": {
@@ -37,6 +43,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"typescript": "^5.7.2"
 	}
 }

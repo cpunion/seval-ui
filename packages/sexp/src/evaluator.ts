@@ -89,6 +89,7 @@ export function createEvaluator(options: EvaluatorOptions = {}) {
         ...options.primitives,
     }
     const maxDepth = options.maxDepth ?? 100
+    let maxDepthReached = 0
 
     function evalLambda(fn: LambdaFunction, argValues: Value[], depth: number): Value {
         const closureEnv = ensureEnv(fn.closure)
@@ -100,7 +101,14 @@ export function createEvaluator(options: EvaluatorOptions = {}) {
     }
 
     function evalExpr(expr: SExpr, env: RuntimeEnv, depth = 0): Value {
+        if (depth > maxDepthReached) {
+            maxDepthReached = depth
+            if (depth % 100 === 0) {
+                console.log(`[evalExpr] depth reached: ${depth}`)
+            }
+        }
         if (depth > maxDepth) {
+            console.error(`[evalExpr] Maximum depth ${maxDepth} exceeded, actual depth: ${depth}`)
             throw new Error('Maximum evaluation depth exceeded')
         }
 

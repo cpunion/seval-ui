@@ -1,44 +1,49 @@
 {
-  "name": "@seval-ui/react",
-  "version": "0.1.0",
-  "description": "React integration for S-expression based UI runtime",
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "bun test",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
-    "format": "biome format --write .",
-    "prepublishOnly": "bun run build"
-  },
-  "keywords": ["seval-ui", "react", "s-expression", "ui-runtime"],
-  "author": "cpunion",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aspect-build/seval-ui.git",
-    "directory": "packages/react"
-  },
-  "dependencies": {},
-  "peerDependencies": {
-    "react": ">=18.0.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/bun": "latest",
-    "@types/react": "^19.2.5",
-    "react": "^19.2.0",
-    "typescript": "^5.7.2"
-  }
+	"name": "@seval-ui/react",
+	"version": "0.1.0",
+	"description": "React integration for S-expression based UI runtime",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"test": "bun test",
+		"coverage": "bun test --coverage",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format --write .",
+		"prepublishOnly": "bun run build"
+	},
+	"keywords": ["seval-ui", "react", "s-expression", "ui-runtime"],
+	"author": "cpunion",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cpunion/seval-ui.git",
+		"directory": "packages/react"
+	},
+	"dependencies": {
+		"mobx": "^6.13.5",
+		"mobx-state-tree": "^7.0.2",
+		"mobx-react-lite": "^4.1.0"
+	},
+	"peerDependencies": {
+		"react": ">=18.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/bun": "latest",
+		"@types/react": "^19.2.5",
+		"react": "^19.2.0",
+		"typescript": "^5.7.2"
+	}
 }

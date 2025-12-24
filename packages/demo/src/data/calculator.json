@@ -24,7 +24,7 @@
             }
           }
         },
-        { "id": "root", "component": { "Column": { "children": { "explicitList": ["display-card", "history-row", "buttons-grid"] } } } },
+        { "id": "root", "component": { "Column": { "children": { "explicitList": ["code", "display-card", "history-row", "buttons-grid"] } } } },
         { "id": "display-card", "component": { "Card": { "child": "display-text" } } },
         { "id": "display-text", "component": { "Text": { "text": { "path": "/display" }, "usageHint": "h1" } } },
         { "id": "history-row", "component": { "Text": { "text": { "path": "/history" }, "usageHint": "body" } } },
