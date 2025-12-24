@@ -1,26 +1,25 @@
-# seval.js
+# @seval-ui/sexp
 
 > S-expression evaluator for TypeScript/JavaScript
 
-[![CI](https://github.com/cpunion/seval.js/actions/workflows/ci.yml/badge.svg)](https://github.com/cpunion/seval.js/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/gh/cpunion/seval.js/branch/main/graph/badge.svg)](https://codecov.io/gh/cpunion/seval.js)
-[![npm version](https://img.shields.io/npm/v/seval.js.svg)](https://www.npmjs.com/package/seval.js)
+[![CI](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@seval-ui/sexp.svg)](https://www.npmjs.com/package/@seval-ui/sexp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`seval.js` is a safe, sandboxed S-expression parser and evaluator. It's designed to be easily extensible and embeddable in JavaScript/TypeScript applications.
+`@seval-ui/sexp` is a safe, sandboxed S-expression parser and evaluator. It's designed to be easily extensible and embeddable in JavaScript/TypeScript applications.
 
 ## Installation
 
 ```bash
-npm install seval.js
+npm install @seval-ui/sexp
 # or
-bun add seval.js
+pnpm add @seval-ui/sexp
 ```
 
 ## Quick Start
 
 ```typescript
-import { evalString, createEvaluator } from 'seval.js'
+import { evalString, createEvaluator } from '@seval-ui/sexp'
 
 // Simple evaluation
 evalString('(+ 1 2 3)')     // 6
