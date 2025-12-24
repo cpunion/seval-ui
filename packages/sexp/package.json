@@ -29,7 +29,7 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/aspect-build/seval-ui.git",
+        "url": "https://github.com/cpunion/seval-ui.git",
         "directory": "packages/sexp"
     },
     "devDependencies": {
