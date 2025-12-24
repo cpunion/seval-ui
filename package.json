@@ -1,0 +1,17 @@
+{
+  "name": "seval-ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "S-expression based UI runtime for React",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "clean": "pnpm -r exec rm -rf dist node_modules"
+  },
+  "keywords": ["seval", "sexp", "s-expression", "react", "ui"],
+  "author": "cpunion",
+  "license": "MIT"
+}

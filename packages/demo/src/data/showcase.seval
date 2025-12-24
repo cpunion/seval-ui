@@ -1,0 +1,55 @@
+{
+  action_increment() {
+    [["counter", counter + 1], ["counterText", "Count: " + (counter + 1)]]
+  },
+
+  action_decrement() {
+    [["counter", counter - 1], ["counterText", "Count: " + (counter - 1)]]
+  },
+
+  action_reset() {
+    [["counter", 0], ["counterText", "Count: 0"]]
+  },
+
+  action_selectItem() {
+    [["selectedItem", get(context, "name")]]
+  },
+
+  action_addTodo() {
+    todoInput == ""
+      ? []
+      : [
+          ["todos", append(todos, obj("id", nextTodoId, "text", todoInput, "done", false))],
+          ["nextTodoId", nextTodoId + 1],
+          ["todoInput", ""],
+          ["todoStats", length(filter((t) => get(t, "done"), append(todos, obj("id", nextTodoId, "text", todoInput, "done", false)))) + " of " + (length(todos) + 1) + " completed"]
+        ]
+  },
+
+  action_deleteTodo() {
+    [
+      ["todos", filter((t) => get(t, "id") != get(context, "id"), todos)],
+      ["todoStats", length(filter((t) => get(t, "done"), filter((t) => get(t, "id") != get(context, "id"), todos))) + " of " + length(filter((t) => get(t, "id") != get(context, "id"), todos)) + " completed"]
+    ]
+  },
+
+  action_submitForm() {
+    formName == "" || formEmail == ""
+      ? [["formResultText", "Please fill in Name and Email"]]
+      : [
+          ["formSubmitted", true],
+          ["formResultText", "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)]
+        ]
+  },
+
+  action_resetForm() {
+    [["formName", ""], ["formEmail", ""], ["formMessage", ""], ["formSubmitted", false], ["formResultText", ""]]
+  },
+
+  updateDerived() {
+    [
+      ["checkedText", isChecked ? "Checked!" : "Unchecked"],
+      ["todoStats", length(filter((t) => get(t, "done"), todos)) + " of " + length(todos) + " completed"]
+    ]
+  }
+}

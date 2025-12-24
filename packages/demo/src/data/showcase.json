@@ -1,0 +1,1147 @@
+[
+  {
+    "dataModelUpdate": {
+      "surfaceId": "showcase",
+      "contents": [
+        {
+          "key": "title",
+          "valueString": "A2UI Component Showcase"
+        },
+        {
+          "key": "counter",
+          "valueNumber": 0
+        },
+        {
+          "key": "inputText",
+          "valueString": ""
+        },
+        {
+          "key": "isChecked",
+          "valueBoolean": false
+        },
+        {
+          "key": "activeTab",
+          "valueNumber": 0
+        },
+        {
+          "key": "showModal",
+          "valueBoolean": false
+        },
+        {
+          "key": "selectedItem",
+          "valueString": ""
+        },
+        {
+          "key": "items",
+          "valueArray": [
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "name",
+                  "valueString": "Apple"
+                },
+                {
+                  "key": "emoji",
+                  "valueString": "🍎"
+                },
+                {
+                  "key": "color",
+                  "valueString": "#ff6b6b"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 2
+                },
+                {
+                  "key": "name",
+                  "valueString": "Banana"
+                },
+                {
+                  "key": "emoji",
+                  "valueString": "🍌"
+                },
+                {
+                  "key": "color",
+                  "valueString": "#ffd93d"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 3
+                },
+                {
+                  "key": "name",
+                  "valueString": "Grape"
+                },
+                {
+                  "key": "emoji",
+                  "valueString": "🍇"
+                },
+                {
+                  "key": "color",
+                  "valueString": "#9b59b6"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 4
+                },
+                {
+                  "key": "name",
+                  "valueString": "Orange"
+                },
+                {
+                  "key": "emoji",
+                  "valueString": "🍊"
+                },
+                {
+                  "key": "color",
+                  "valueString": "#f39c12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "todoInput",
+          "valueString": ""
+        },
+        {
+          "key": "todos",
+          "valueArray": [
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "text",
+                  "valueString": "Learn A2UI protocol"
+                },
+                {
+                  "key": "done",
+                  "valueBoolean": true
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 2
+                },
+                {
+                  "key": "text",
+                  "valueString": "Build S-expression runtime"
+                },
+                {
+                  "key": "done",
+                  "valueBoolean": false
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 3
+                },
+                {
+                  "key": "text",
+                  "valueString": "Create showcase demo"
+                },
+                {
+                  "key": "done",
+                  "valueBoolean": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "nextTodoId",
+          "valueNumber": 4
+        },
+        {
+          "key": "formName",
+          "valueString": ""
+        },
+        {
+          "key": "formEmail",
+          "valueString": ""
+        },
+        {
+          "key": "formMessage",
+          "valueString": ""
+        },
+        {
+          "key": "formSubmitted",
+          "valueBoolean": false
+        },
+        {
+          "key": "formResultText",
+          "valueString": ""
+        },
+        {
+          "key": "counterText",
+          "valueString": "Count: 0"
+        },
+        {
+          "key": "checkedText",
+          "valueString": "Unchecked"
+        },
+        {
+          "key": "itemCount",
+          "valueNumber": 4
+        },
+        {
+          "key": "todoStats",
+          "valueString": "1 of 3 completed"
+        }
+      ]
+    }
+  },
+  {
+    "surfaceUpdate": {
+      "surfaceId": "showcase",
+      "components": [
+        {
+          "id": "code",
+          "component": {
+            "Code": {
+              "lang": "minijs",
+              "code": "{\n  action_increment() {\n    [[\"counter\", counter + 1], [\"counterText\", \"Count: \" + (counter + 1)]]\n  },\n\n  action_decrement() {\n    [[\"counter\", counter - 1], [\"counterText\", \"Count: \" + (counter - 1)]]\n  },\n\n  action_reset() {\n    [[\"counter\", 0], [\"counterText\", \"Count: 0\"]]\n  },\n\n  action_selectItem() {\n    [[\"selectedItem\", get(context, \"name\")]]\n  },\n\n  action_addTodo() {\n    todoInput == \"\"\n      ? []\n      : [\n          [\"todos\", append(todos, obj(\"id\", nextTodoId, \"text\", todoInput, \"done\", false))],\n          [\"nextTodoId\", nextTodoId + 1],\n          [\"todoInput\", \"\"],\n          [\"todoStats\", length(filter((t) => get(t, \"done\"), append(todos, obj(\"id\", nextTodoId, \"text\", todoInput, \"done\", false)))) + \" of \" + (length(todos) + 1) + \" completed\"]\n        ]\n  },\n\n  action_deleteTodo() {\n    [\n      [\"todos\", filter((t) => get(t, \"id\") != get(context, \"id\"), todos)],\n      [\"todoStats\", length(filter((t) => get(t, \"done\"), filter((t) => get(t, \"id\") != get(context, \"id\"), todos))) + \" of \" + length(filter((t) => get(t, \"id\") != get(context, \"id\"), todos)) + \" completed\"]\n    ]\n  },\n\n  action_submitForm() {\n    formName == \"\" || formEmail == \"\"\n      ? [[\"formResultText\", \"Please fill in Name and Email\"]]\n      : [\n          [\"formSubmitted\", true],\n          [\"formResultText\", \"Submitted: \" + formName + \" <\" + formEmail + \">\" + (formMessage == \"\" ? \"\" : \" - \" + formMessage)]\n        ]\n  },\n\n  action_resetForm() {\n    [[\"formName\", \"\"], [\"formEmail\", \"\"], [\"formMessage\", \"\"], [\"formSubmitted\", false], [\"formResultText\", \"\"]]\n  },\n\n  updateDerived() {\n    [\n      [\"checkedText\", isChecked ? \"Checked!\" : \"Unchecked\"],\n      [\"todoStats\", length(filter((t) => get(t, \"done\"), todos)) + \" of \" + length(todos) + \" completed\"]\n    ]\n  }\n}"
+            }
+          }
+        },
+        {
+          "id": "root",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "header",
+                  "tabs-section"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "header",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "title-text",
+                  "subtitle-text"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "title-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/title"
+              },
+              "usageHint": "h1"
+            }
+          }
+        },
+        {
+          "id": "subtitle-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Demonstrating all components with MiniJS logic"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "tabs-section",
+          "component": {
+            "Tabs": {
+              "tabItems": [
+                {
+                  "title": {
+                    "literalString": "Basic"
+                  },
+                  "child": "basic-tab"
+                },
+                {
+                  "title": {
+                    "literalString": "Lists"
+                  },
+                  "child": "lists-tab"
+                },
+                {
+                  "title": {
+                    "literalString": "Todo App"
+                  },
+                  "child": "todo-tab"
+                },
+                {
+                  "title": {
+                    "literalString": "Form"
+                  },
+                  "child": "form-tab"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "basic-tab",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "counter-section",
+                  "divider1",
+                  "checkbox-section",
+                  "divider2",
+                  "text-input-section"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "counter-section",
+          "component": {
+            "Card": {
+              "child": "counter-content"
+            }
+          }
+        },
+        {
+          "id": "counter-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "counter-title",
+                  "counter-display",
+                  "counter-buttons"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "counter-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Counter Example"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "counter-display",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/counterText"
+              },
+              "usageHint": "h2"
+            }
+          }
+        },
+        {
+          "id": "counter-buttons",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-dec",
+                  "btn-reset",
+                  "btn-inc"
+                ]
+              },
+              "distribution": "center"
+            }
+          }
+        },
+        {
+          "id": "btn-dec-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "−"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-dec",
+          "component": {
+            "Button": {
+              "child": "btn-dec-text",
+              "action": {
+                "name": "decrement"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-reset-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Reset"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-reset",
+          "component": {
+            "Button": {
+              "child": "btn-reset-text",
+              "action": {
+                "name": "reset"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-inc-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "+"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-inc",
+          "component": {
+            "Button": {
+              "child": "btn-inc-text",
+              "action": {
+                "name": "increment"
+              }
+            }
+          }
+        },
+        {
+          "id": "divider1",
+          "component": {
+            "Divider": {
+              "axis": "horizontal"
+            }
+          }
+        },
+        {
+          "id": "checkbox-section",
+          "component": {
+            "Card": {
+              "child": "checkbox-content"
+            }
+          }
+        },
+        {
+          "id": "checkbox-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "checkbox-title",
+                  "checkbox-row",
+                  "checkbox-status"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "checkbox-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Checkbox Example"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "checkbox-row",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "demo-checkbox"
+                ]
+              },
+              "distribution": "center"
+            }
+          }
+        },
+        {
+          "id": "demo-checkbox",
+          "component": {
+            "Checkbox": {
+              "label": {
+                "literalString": "Toggle me!"
+              },
+              "value": {
+                "path": "/isChecked"
+              }
+            }
+          }
+        },
+        {
+          "id": "checkbox-status",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/checkedText"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "divider2",
+          "component": {
+            "Divider": {
+              "axis": "horizontal"
+            }
+          }
+        },
+        {
+          "id": "text-input-section",
+          "component": {
+            "Card": {
+              "child": "text-input-content"
+            }
+          }
+        },
+        {
+          "id": "text-input-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "input-title",
+                  "demo-textfield",
+                  "input-preview"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "input-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Text Input with Data Binding"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "demo-textfield",
+          "component": {
+            "TextField": {
+              "label": {
+                "literalString": "Type something:"
+              },
+              "text": {
+                "path": "/inputText"
+              }
+            }
+          }
+        },
+        {
+          "id": "input-preview",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/inputText"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "lists-tab",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "list-section",
+                  "selected-section"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "list-section",
+          "component": {
+            "Card": {
+              "child": "list-content"
+            }
+          }
+        },
+        {
+          "id": "list-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "list-title",
+                  "list-subtitle",
+                  "fruit-list"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "list-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Dynamic List (template)"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "list-subtitle",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Click an item to select it"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "fruit-list",
+          "component": {
+            "List": {
+              "children": {
+                "template": {
+                  "dataBinding": "/items",
+                  "componentId": "fruit-item"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "fruit-item",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "fruit-emoji",
+                  "fruit-name",
+                  "fruit-select-btn"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "fruit-emoji",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "emoji"
+              },
+              "usageHint": "h2"
+            }
+          }
+        },
+        {
+          "id": "fruit-name",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "name"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "fruit-select-btn-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Select"
+              }
+            }
+          }
+        },
+        {
+          "id": "fruit-select-btn",
+          "component": {
+            "Button": {
+              "child": "fruit-select-btn-text",
+              "action": {
+                "name": "selectItem",
+                "context": [
+                  {
+                    "key": "name",
+                    "value": {
+                      "path": "name"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "selected-section",
+          "component": {
+            "Card": {
+              "child": "selected-content"
+            }
+          }
+        },
+        {
+          "id": "selected-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "selected-label",
+                  "selected-value"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "selected-label",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Selected Item:"
+              },
+              "usageHint": "h4"
+            }
+          }
+        },
+        {
+          "id": "selected-value",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/selectedItem"
+              },
+              "usageHint": "h2"
+            }
+          }
+        },
+        {
+          "id": "todo-tab",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "todo-card"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-card",
+          "component": {
+            "Card": {
+              "child": "todo-content"
+            }
+          }
+        },
+        {
+          "id": "todo-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "todo-title",
+                  "todo-stats",
+                  "todo-input-row",
+                  "todo-list"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Todo List"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "todo-stats",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/todoStats"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "todo-input-row",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "todo-textfield",
+                  "todo-add-btn"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-textfield",
+          "component": {
+            "TextField": {
+              "label": {
+                "literalString": "New todo:"
+              },
+              "text": {
+                "path": "/todoInput"
+              }
+            }
+          },
+          "weight": 3
+        },
+        {
+          "id": "todo-add-btn-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Add"
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-add-btn",
+          "component": {
+            "Button": {
+              "child": "todo-add-btn-text",
+              "primary": true,
+              "action": {
+                "name": "addTodo"
+              }
+            }
+          },
+          "weight": 1
+        },
+        {
+          "id": "todo-list",
+          "component": {
+            "List": {
+              "children": {
+                "template": {
+                  "dataBinding": "/todos",
+                  "componentId": "todo-item"
+                }
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-item",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "todo-checkbox",
+                  "todo-text",
+                  "todo-delete-btn"
+                ]
+              },
+              "alignment": "center"
+            }
+          }
+        },
+        {
+          "id": "todo-checkbox",
+          "component": {
+            "Checkbox": {
+              "value": {
+                "path": "done"
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "text"
+              },
+              "usageHint": "body"
+            }
+          },
+          "weight": 3
+        },
+        {
+          "id": "todo-delete-btn-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Delete"
+              }
+            }
+          }
+        },
+        {
+          "id": "todo-delete-btn",
+          "component": {
+            "Button": {
+              "child": "todo-delete-btn-text",
+              "action": {
+                "name": "deleteTodo",
+                "context": [
+                  {
+                    "key": "id",
+                    "value": {
+                      "path": "id"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "form-tab",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "form-card"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "form-card",
+          "component": {
+            "Card": {
+              "child": "form-content"
+            }
+          }
+        },
+        {
+          "id": "form-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "form-title",
+                  "form-fields",
+                  "form-buttons",
+                  "form-result"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "form-title",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Contact Form"
+              },
+              "usageHint": "h3"
+            }
+          }
+        },
+        {
+          "id": "form-fields",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "form-name",
+                  "form-email",
+                  "form-message"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "form-name",
+          "component": {
+            "TextField": {
+              "label": {
+                "literalString": "Name"
+              },
+              "text": {
+                "path": "/formName"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-email",
+          "component": {
+            "TextField": {
+              "label": {
+                "literalString": "Email"
+              },
+              "text": {
+                "path": "/formEmail"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-message",
+          "component": {
+            "TextField": {
+              "label": {
+                "literalString": "Message"
+              },
+              "text": {
+                "path": "/formMessage"
+              },
+              "textFieldType": "longText"
+            }
+          }
+        },
+        {
+          "id": "form-buttons",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "form-submit-btn",
+                  "form-reset-btn"
+                ]
+              },
+              "distribution": "end"
+            }
+          }
+        },
+        {
+          "id": "form-submit-btn-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Submit"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-submit-btn",
+          "component": {
+            "Button": {
+              "child": "form-submit-btn-text",
+              "primary": true,
+              "action": {
+                "name": "submitForm"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-reset-btn-text",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Reset"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-reset-btn",
+          "component": {
+            "Button": {
+              "child": "form-reset-btn-text",
+              "action": {
+                "name": "resetForm"
+              }
+            }
+          }
+        },
+        {
+          "id": "form-result",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/formResultText"
+              },
+              "usageHint": "body"
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "beginRendering": {
+      "surfaceId": "showcase",
+      "root": "root"
+    }
+  }
+]

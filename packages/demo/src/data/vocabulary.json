@@ -1,0 +1,714 @@
+[
+  {
+    "dataModelUpdate": {
+      "surfaceId": "vocabulary",
+      "contents": [
+        {
+          "key": "words",
+          "valueArray": [
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "word",
+                  "valueString": "ephemeral"
+                },
+                {
+                  "key": "meaning",
+                  "valueString": "lasting for a very short time"
+                },
+                {
+                  "key": "phonetic",
+                  "valueString": "/ɪˈfem(ə)rəl/"
+                },
+                {
+                  "key": "example",
+                  "valueString": "The ephemeral beauty of cherry blossoms"
+                },
+                {
+                  "key": "interval",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "easeFactor",
+                  "valueNumber": 2.5
+                },
+                {
+                  "key": "nextReview",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "reviewCount",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "status",
+                  "valueString": "new"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 2
+                },
+                {
+                  "key": "word",
+                  "valueString": "ubiquitous"
+                },
+                {
+                  "key": "meaning",
+                  "valueString": "present, appearing, or found everywhere"
+                },
+                {
+                  "key": "phonetic",
+                  "valueString": "/juːˈbɪkwɪtəs/"
+                },
+                {
+                  "key": "example",
+                  "valueString": "Smartphones have become ubiquitous"
+                },
+                {
+                  "key": "interval",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "easeFactor",
+                  "valueNumber": 2.5
+                },
+                {
+                  "key": "nextReview",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "reviewCount",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "status",
+                  "valueString": "new"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 3
+                },
+                {
+                  "key": "word",
+                  "valueString": "serendipity"
+                },
+                {
+                  "key": "meaning",
+                  "valueString": "the occurrence of events by chance in a happy way"
+                },
+                {
+                  "key": "phonetic",
+                  "valueString": "/ˌserənˈdɪpɪti/"
+                },
+                {
+                  "key": "example",
+                  "valueString": "Finding that book was pure serendipity"
+                },
+                {
+                  "key": "interval",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "easeFactor",
+                  "valueNumber": 2.5
+                },
+                {
+                  "key": "nextReview",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "reviewCount",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "status",
+                  "valueString": "new"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 4
+                },
+                {
+                  "key": "word",
+                  "valueString": "eloquent"
+                },
+                {
+                  "key": "meaning",
+                  "valueString": "fluent or persuasive in speaking or writing"
+                },
+                {
+                  "key": "phonetic",
+                  "valueString": "/ˈeləkwənt/"
+                },
+                {
+                  "key": "example",
+                  "valueString": "She gave an eloquent speech"
+                },
+                {
+                  "key": "interval",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "easeFactor",
+                  "valueNumber": 2.5
+                },
+                {
+                  "key": "nextReview",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "reviewCount",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "status",
+                  "valueString": "new"
+                }
+              ]
+            },
+            {
+              "key": "",
+              "valueMap": [
+                {
+                  "key": "id",
+                  "valueNumber": 5
+                },
+                {
+                  "key": "word",
+                  "valueString": "pragmatic"
+                },
+                {
+                  "key": "meaning",
+                  "valueString": "dealing with things sensibly and realistically"
+                },
+                {
+                  "key": "phonetic",
+                  "valueString": "/præɡˈmætɪk/"
+                },
+                {
+                  "key": "example",
+                  "valueString": "We need a pragmatic approach"
+                },
+                {
+                  "key": "interval",
+                  "valueNumber": 1
+                },
+                {
+                  "key": "easeFactor",
+                  "valueNumber": 2.5
+                },
+                {
+                  "key": "nextReview",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "reviewCount",
+                  "valueNumber": 0
+                },
+                {
+                  "key": "status",
+                  "valueString": "new"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "currentIndex",
+          "valueNumber": 0
+        },
+        {
+          "key": "showAnswer",
+          "valueBoolean": false
+        },
+        {
+          "key": "currentTab",
+          "valueString": "study"
+        },
+        {
+          "key": "studied",
+          "valueNumber": 0
+        },
+        {
+          "key": "remembered",
+          "valueNumber": 0
+        },
+        {
+          "key": "forgot",
+          "valueNumber": 0
+        }
+      ]
+    }
+  },
+  {
+    "surfaceUpdate": {
+      "surfaceId": "vocabulary",
+      "components": [
+        {
+          "id": "code",
+          "component": {
+            "Code": {
+              "lang": "minijs",
+              "code": "{\n  getWordAt(idx) { nth(words, idx) },\n\n  calcNewEf(oldEf, quality) {\n    max(1.3, min(2.5, oldEf + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))\n  },\n\n  calcNewInterval(oldInterval, easeFactor, reviewCount, quality) {\n    quality == 0 ? 1 : reviewCount == 0 ? 1 : reviewCount == 1 ? 6 : round(oldInterval * easeFactor)\n  },\n\n  nextWordIndex(currentIdx) { (currentIdx + 1) % length(words) },\n\n  action_switchTab() {\n    [[\"currentTab\", get(context, \"tab\")]]\n  },\n\n  action_showAnswer() {\n    [[\"showAnswer\", true]]\n  },\n\n  action_reviewWord() {\n    [\n      [\"words\", updateAt(words, currentIndex, merge(nth(words, currentIndex), obj(\n        \"easeFactor\", calcNewEf(get(nth(words, currentIndex), \"easeFactor\"), get(context, \"quality\")),\n        \"interval\", calcNewInterval(get(nth(words, currentIndex), \"interval\"), get(nth(words, currentIndex), \"easeFactor\"), get(nth(words, currentIndex), \"reviewCount\"), get(context, \"quality\")),\n        \"status\", get(context, \"quality\") == 0 ? \"learning\" : get(nth(words, currentIndex), \"reviewCount\") >= 3 ? \"mastered\" : \"learning\",\n        \"reviewCount\", get(nth(words, currentIndex), \"reviewCount\") + 1,\n        \"nextReview\", now() + calcNewInterval(get(nth(words, currentIndex), \"interval\"), get(nth(words, currentIndex), \"easeFactor\"), get(nth(words, currentIndex), \"reviewCount\"), get(context, \"quality\")) * 86400000\n      )))],\n      [\"currentIndex\", nextWordIndex(currentIndex)],\n      [\"showAnswer\", false],\n      [\"studied\", studied + 1],\n      [\"remembered\", get(context, \"quality\") > 0 ? remembered + 1 : remembered],\n      [\"forgot\", get(context, \"quality\") == 0 ? forgot + 1 : forgot]\n    ]\n  },\n\n  updateDerived() {\n    [\n      [\"currentWord\", get(nth(words, currentIndex), \"word\")],\n      [\"currentPhonetic\", get(nth(words, currentIndex), \"phonetic\")],\n      [\"currentMeaning\", get(nth(words, currentIndex), \"meaning\")],\n      [\"currentExample\", get(nth(words, currentIndex), \"example\")],\n      [\"progressText\", \"Card \" + (currentIndex + 1) + \" of \" + length(words)],\n      [\"studiedText\", \"Studied: \" + studied],\n      [\"rememberedText\", \"Remembered: \" + remembered],\n      [\"forgotText\", \"Forgot: \" + forgot],\n      [\"totalText\", \"Total words: \" + length(words)]\n    ]\n  }\n}"
+            }
+          }
+        },
+        {
+          "id": "root",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "tab-bar",
+                  "study-view",
+                  "stats-view"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "tab-bar",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "tab-study",
+                  "tab-stats"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "tab-study",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Study"
+              },
+              "action": {
+                "name": "switchTab",
+                "context": [
+                  {
+                    "key": "tab",
+                    "value": {
+                      "literalString": "study"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "tab-stats",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Statistics"
+              },
+              "action": {
+                "name": "switchTab",
+                "context": [
+                  {
+                    "key": "tab",
+                    "value": {
+                      "literalString": "stats"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "study-view",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "progress-text",
+                  "flashcard",
+                  "show-btn-row",
+                  "answer-section"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "progress-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/progressText"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "flashcard",
+          "component": {
+            "Card": {
+              "child": "flashcard-content"
+            }
+          }
+        },
+        {
+          "id": "flashcard-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "word-text",
+                  "phonetic-text"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "word-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/currentWord"
+              },
+              "usageHint": "h1"
+            }
+          }
+        },
+        {
+          "id": "phonetic-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/currentPhonetic"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "show-btn-row",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-show"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-show",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Show Answer"
+              },
+              "action": {
+                "name": "showAnswer"
+              }
+            }
+          }
+        },
+        {
+          "id": "answer-section",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "answer-card",
+                  "answer-buttons"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "answer-card",
+          "component": {
+            "Card": {
+              "child": "answer-card-content"
+            }
+          }
+        },
+        {
+          "id": "answer-card-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "meaning-label",
+                  "meaning-text",
+                  "example-label",
+                  "example-text"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "meaning-label",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Meaning:"
+              },
+              "usageHint": "h4"
+            }
+          }
+        },
+        {
+          "id": "meaning-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/currentMeaning"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "example-label",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Example:"
+              },
+              "usageHint": "h4"
+            }
+          }
+        },
+        {
+          "id": "example-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/currentExample"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "answer-buttons",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-forgot",
+                  "btn-hard",
+                  "btn-good",
+                  "btn-easy"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-forgot",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Forgot"
+              },
+              "action": {
+                "name": "reviewWord",
+                "context": [
+                  {
+                    "key": "quality",
+                    "value": {
+                      "literalNumber": 0
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-hard",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Hard"
+              },
+              "action": {
+                "name": "reviewWord",
+                "context": [
+                  {
+                    "key": "quality",
+                    "value": {
+                      "literalNumber": 2
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-good",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Good"
+              },
+              "action": {
+                "name": "reviewWord",
+                "context": [
+                  {
+                    "key": "quality",
+                    "value": {
+                      "literalNumber": 3
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-easy",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "Easy"
+              },
+              "action": {
+                "name": "reviewWord",
+                "context": [
+                  {
+                    "key": "quality",
+                    "value": {
+                      "literalNumber": 5
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-view",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "stats-header",
+                  "stats-card"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-header",
+          "component": {
+            "Text": {
+              "text": {
+                "literalString": "Session Statistics"
+              },
+              "usageHint": "h2"
+            }
+          }
+        },
+        {
+          "id": "stats-card",
+          "component": {
+            "Card": {
+              "child": "stats-content"
+            }
+          }
+        },
+        {
+          "id": "stats-content",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "stats-studied",
+                  "stats-remembered",
+                  "stats-forgot",
+                  "stats-total"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-studied",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/studiedText"
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-remembered",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/rememberedText"
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-forgot",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/forgotText"
+              }
+            }
+          }
+        },
+        {
+          "id": "stats-total",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/totalText"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "beginRendering": {
+      "surfaceId": "vocabulary",
+      "root": "root"
+    }
+  }
+]
