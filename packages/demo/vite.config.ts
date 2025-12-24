@@ -31,8 +31,4 @@ export default defineConfig({
     include: ['react', 'react-dom'],
     exclude: ['@seval-ui/seval'],
   },
-  test: {
-    environment: 'jsdom',
-    setupFiles: './vitest.setup.ts',
-  },
 })
