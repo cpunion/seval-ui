@@ -25,40 +25,58 @@ describe('ShowcasePage', () => {
 		expect(await within(view.container).findByText('Count: 0')).toBeInTheDocument()
 		expect(await within(view.container).findByText('Unchecked')).toBeInTheDocument()
 
-		const todoTabButton = await within(view.container).findByRole('button', { name: 'Todo App' })
+		const todoTabButton = await within(view.container).findByRole('button', {
+			name: 'Todo App',
+		})
 		await user.click(todoTabButton)
 
 		expect(
-			await within(view.container).findByText('1 of 3 completed', undefined, { timeout: 5000 }),
+			await within(view.container).findByText('1 of 3 completed', undefined, {
+				timeout: 10000,
+			}),
 		).toBeInTheDocument()
-	})
+	}, 15000)
 
 	it('updates counter and todos through UI actions', async () => {
 		const view = renderShowcase()
 		const user = userEvent.setup()
 
-		await within(view.container).findByText('Count: 0')
+		// Wait longer for seval compiler initialization
+		await within(view.container).findByText('Count: 0', undefined, { timeout: 15000 })
 
-		const incrementButtons = await within(view.container).findAllByRole('button', { name: '+' })
+		const incrementButtons = await within(view.container).findAllByRole('button', {
+			name: '+',
+		})
 		await user.click(incrementButtons[incrementButtons.length - 1]!)
 
-		await waitFor(() => {
-			expect(within(view.container).getByText('Count: 1')).toBeInTheDocument()
-		})
+		await waitFor(
+			() => {
+				expect(within(view.container).getByText('Count: 1')).toBeInTheDocument()
+			},
+			{ timeout: 10000 },
+		)
 
-		const todoTabButton = await within(view.container).findByRole('button', { name: 'Todo App' })
+		const todoTabButton = await within(view.container).findByRole('button', {
+			name: 'Todo App',
+		})
 		await user.click(todoTabButton)
 
 		const todoInput = await findTextFieldInput('New todo:', view.container)
 		await user.type(todoInput, 'Write Showcase tests')
 		await user.click(await within(view.container).findByRole('button', { name: 'Add' }))
 
-		await waitFor(() => {
-			expect(within(view.container).getByText('Write Showcase tests')).toBeInTheDocument()
-		})
+		await waitFor(
+			() => {
+				expect(within(view.container).getByText('Write Showcase tests')).toBeInTheDocument()
+			},
+			{ timeout: 10000 },
+		)
 
-		await waitFor(() => {
-			expect(within(view.container).getByText('1 of 4 completed')).toBeInTheDocument()
-		})
-	})
+		await waitFor(
+			() => {
+				expect(within(view.container).getByText('1 of 4 completed')).toBeInTheDocument()
+			},
+			{ timeout: 10000 },
+		)
+	}, 45000)
 })

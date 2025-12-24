@@ -7,6 +7,7 @@ export default mergeConfig(
 		test: {
 			environment: 'jsdom',
 			setupFiles: './vitest.setup.ts',
+			pool: 'forks', // Use forks for better test isolation with SExpRuntime state
 		},
 	}),
 )
