@@ -51,15 +51,6 @@ export const primitives: Record<string, any> = {
 	'!': (a) => !a,
 
 	// Object helpers
-	obj: (...pairs) => {
-		const result: ValueObject = {}
-		for (let i = 0; i < pairs.length; i += 2) {
-			const key = String(pairs[i])
-			const value = pairs[i + 1]
-			result[key] = value
-		}
-		return result
-	},
 	merge: (...objects) => {
 		const result: ValueObject = {}
 		for (const obj of objects) {
@@ -80,8 +71,7 @@ export const primitives: Record<string, any> = {
 	Date: Date,
 	String: String,
 	Array: Array,
-	// Note: Object is not included to avoid conflict with obj() primitive
-	// Users can access Object via {}.constructor if needed
+	Object: Object,
 
 	// Internal: Proxy wrappers for sandbox protection
 	// These prevent access to dangerous reflection properties

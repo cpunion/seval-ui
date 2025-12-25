@@ -70,10 +70,10 @@ describe('Variable Scopes and Primitives', () => {
 	})
 
 	describe('Built-in Functions (Primitives)', () => {
-		test('obj() creates object from key-value pairs', () => {
+		test('object literal creates object', () => {
 			const code = `{
 				test() {
-					obj("x", 1, "y", 2, "z", 3)
+					{x: 1, y: 2, z: 3}
 				}
 			}`
 			const env = compileSeval(code)
@@ -97,7 +97,7 @@ describe('Variable Scopes and Primitives', () => {
 		test('built-in functions work with local variables', () => {
 			const code = `{
 				test() {
-					this.person = obj("name", "Alice", "age", 30)
+					this.person = {name: "Alice", age: 30}
 					this.person.name
 				}
 			}`
@@ -208,7 +208,7 @@ describe('Variable Scopes and Primitives', () => {
 			const code = `{
 				test() {
 					this.data = { x: 1 }
-					this.result = obj("y", 2)
+					this.result = {y: 2}
 					this.data.x + this.result.y
 				}
 			}`
@@ -224,7 +224,7 @@ describe('Variable Scopes and Primitives', () => {
 				test() {
 					this.nums = [1, 2, 3, 4, 5]
 					this.max = Math.max(1, 2, 3, 4, 5)
-					this.data = obj("max", this.max, "count", this.nums.length)
+					this.data = {max: this.max, count: this.nums.length}
 					this.data.max + this.data.count
 				}
 			}`
@@ -236,8 +236,8 @@ describe('Variable Scopes and Primitives', () => {
 		test('nested function calls with mixed types', () => {
 			const code = `{
 				test() {
-					this.a = obj("x", 10)
-					this.b = obj("y", 20)
+					this.a = {x: 10}
+					this.b = {y: 20}
 					this.merged = merge(this.a, this.b)
 					Math.max(this.merged.x, this.merged.y)
 				}

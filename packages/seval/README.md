@@ -114,8 +114,8 @@ The Seval runtime includes these built-in functions and globals:
 - **Arithmetic**: `+`, `-`, `*`, `/`, `%` (+ also handles string concatenation)
 - **Comparison**: `==`, `!=`, `===`, `!==`, `<`, `<=`, `>`, `>=`
 - **Logical**: `&&`, `||`, `!`
-- **Object helpers**: `obj(k1, v1, k2, v2, ...)`, `merge(obj1, obj2, ...)`, `get(obj, key)`
-- **Globals**: `Math`, `Number`, `Date`, `String`, `Array`
+- **Object helpers**: `merge(obj1, obj2, ...)`, `get(obj, key)`
+- **Globals**: `Math`, `Number`, `Date`, `String`, `Array`, `Object`
 
 Native JavaScript methods are accessible on values:
 - **String**: `s.length`, `s.substring()`, `s.includes()`, `s.startsWith()`, `s.concat()`

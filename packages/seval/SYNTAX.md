@@ -368,7 +368,6 @@ These global objects are available:
 
 ### Primitive Functions
 
-- `obj(k1, v1, k2, v2, ...)` - Create object from key-value pairs
 - `merge(obj1, obj2, ...)` - Merge multiple objects
 - `get(obj, key)` - Get property from object (null-safe)
 

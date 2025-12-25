@@ -290,5 +290,5 @@ The following identifiers are reserved:
 ## Built-in Primitives
 
 Available as global functions/objects:
-- **Functions**: `obj()`, `merge()`
-- **Objects**: `Math`, `Array`, `Number`, `String`, `Date`
+- **Functions**: `merge()`, `get()`
+- **Objects**: `Math`, `Array`, `Number`, `String`, `Date`, `Object`

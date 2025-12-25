@@ -360,9 +360,9 @@ describe('Seval Primitives Coverage', () => {
 		expect(arr).toEqual([1, 2, 3]) // Original unchanged
 	})
 
-	test('obj creates object from key-value pairs', () => {
+	test('object literal with dynamic values', () => {
 		const code = `{
-            createPerson(name, age) { obj("name", name, "age", age) }
+            createPerson(name, age) { {name: name, age: age} }
         }`
 		const env = compileSeval(code)
 		const result = executeSeval(env, 'createPerson', ['Alice', 30])

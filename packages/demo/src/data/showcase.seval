@@ -22,7 +22,7 @@
     if (todoInput == "") {
       null
     } else {
-      newTodos = todos.concat([obj("id", nextTodoId, "text", todoInput, "done", false)])
+      newTodos = todos.concat([{id: nextTodoId, text: todoInput, done: false}])
       this.todos = newTodos
       this.nextTodoId = nextTodoId + 1
       this.todoInput = ""
