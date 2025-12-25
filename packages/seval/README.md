@@ -19,7 +19,7 @@ pnpm add @seval-ui/seval
 ## Quick Start
 
 ```typescript
-import { compileSeval } from '@seval-ui/seval/seval'
+import { compileSeval } from '@seval-ui/seval'
 
 // Compile Seval code
 const code = `{
