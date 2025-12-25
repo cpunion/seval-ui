@@ -29,7 +29,7 @@ export default defineConfig({
 			// Use source directly for hot reload during development
 			'@seval-ui/react-code': path.join(packagesPath, 'react-code/src/index.ts'),
 			'@seval-ui/react': path.join(packagesPath, 'react/src/index.ts'),
-			'@seval-ui/seval': path.join(packagesPath, 'seval/src'),
+			'@seval-ui/seval': path.join(packagesPath, 'seval/src/seval.ts'),
 		},
 	},
 	optimizeDeps: {

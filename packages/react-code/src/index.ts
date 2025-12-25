@@ -13,7 +13,7 @@ export type { IMinimalStore, IMinimalSurface } from "./SevalRuntime";
 export { CodeRenderer, createCodeRegistry as createCodeComponent } from "./CodeComponent";
 
 // Re-export seval utilities for convenience
-export { compileSeval, executeSeval, Tokenizer, Parser } from "@seval-ui/seval/seval";
+export { compileSeval, executeSeval, Tokenizer, Parser } from "@seval-ui/seval";
 
 // Re-export seval types
-export type { Value, Environment, SFunction } from "@seval-ui/seval/seval";
+export type { Value, Environment, SFunction } from "@seval-ui/seval";

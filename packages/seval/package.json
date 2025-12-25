@@ -1,25 +1,18 @@
 {
 	"name": "@seval-ui/seval",
 	"version": "1.0.1",
-	"description": "Seval compiler - JavaScript-like language that compiles to S-expressions",
+	"description": "Seval - JavaScript-like language compiler for UI logic",
 	"type": "module",
-	"main": "compiler.sexp",
-	"types": "index.d.ts",
+	"main": "./dist/seval.js",
+	"module": "./dist/seval.js",
+	"types": "./dist/seval.d.ts",
 	"exports": {
 		".": {
-			"types": "./index.d.ts",
-			"default": "./compiler.sexp"
-		},
-		"./source": {
-			"types": "./index.d.ts",
-			"default": "./compiler.sexp"
-		},
-		"./seval": {
-			"types": "./seval.d.ts",
-			"default": "./dist/seval.js"
+			"import": "./dist/seval.js",
+			"types": "./dist/seval.d.ts"
 		}
 	},
-	"files": ["compiler.sexp", "index.d.ts", "seval.d.ts", "dist"],
+	"files": ["dist"],
 	"scripts": {
 		"build": "tsc -p tsconfig.seval.json",
 		"test": "bun test",
@@ -30,7 +23,7 @@
 		"coverage": "bun test --coverage",
 		"prepublishOnly": "pnpm run build"
 	},
-	"keywords": ["seval", "s-expression", "self-hosted", "compiler"],
+	"keywords": ["seval", "compiler", "javascript", "dsl", "ui-logic"],
 	"author": "cpunion",
 	"license": "MIT",
 	"repository": {
@@ -38,7 +31,6 @@
 		"url": "https://github.com/cpunion/seval-ui.git",
 		"directory": "packages/seval"
 	},
-	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@types/bun": "latest",
