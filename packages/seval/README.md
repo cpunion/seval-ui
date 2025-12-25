@@ -1,6 +1,6 @@
 # @seval-ui/seval
 
-> JavaScript-like language that compiles to S-expressions
+> JavaScript-like language with native TypeScript runtime
 
 [![CI](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@seval-ui/seval.svg)](https://www.npmjs.com/package/@seval-ui/seval)
@@ -89,10 +89,10 @@ The Seval runtime includes these built-in functions:
 - **Comparison**: `=`, `!=`, `<`, `<=`, `>`, `>=`
 - **Logic**: `and`, `or`, `not`
 - **String**: `str`, `parseNum`, `strContains`, `strStartsWith`, `substr`
-- **Array**: `list`, `nth`, `length`, `updateAt`, `append`, `prepend`, `first`, `rest`, `filter`, `map`, `reduce`
-- **Object**: `obj`, `get`, `merge`
-- **Math**: `max`, `min`, `round`, `floor`, `ceil`
-- **Time**: `now`
+- **Array**: `[...]` syntax, `arr.length`, `arr[index]`, `arr.first()`, `arr.rest()`, `arr.append()`, `arr.prepend()`, `arr.map()`, `arr.filter()`, `arr.reduce()`
+- **Object**: `{...}` syntax, `obj.property`, `obj[key]`, `obj.keys()`, `obj.merge()`
+- **Math**: `Math.max()`, `Math.min()`, `Math.round()`, `Math.floor()`, `Math.ceil()`, `Math.abs()`
+- **Time**: `Time.now()`
 
 ## License
 

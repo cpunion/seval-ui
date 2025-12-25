@@ -1,6 +1,6 @@
 # MiniJS Syntax Specification
 
-MiniJS is a JavaScript-like DSL that compiles to S-expressions. It's designed to be embedded in JSON configurations and evaluated using the seval runtime.
+MiniJS is a JavaScript-like DSL designed to be embedded in JSON configurations and evaluated using the seval runtime.
 
 ## Literals
 
@@ -43,7 +43,10 @@ null
 ### Arrays
 
 ```javascript
-[][(1, 2, 3)][("a", "b")][(1, "two", 3)]; // Empty array // Array with elements // String array // Mixed types
+[]                    // Empty array
+[1, 2, 3]            // Array with elements
+["a", "b"]           // String array
+[1, "two", true]     // Mixed types
 ```
 
 ## Operators
@@ -201,18 +204,28 @@ state is updated inside method bodies.
 
 ## Property Access
 
-### Using get() Function
+### Dot Notation
 
-To access object or array properties, use the `get()` built-in function:
+Access object properties using dot notation:
 
 ```javascript
-get(context, "digit")  // Access object property
-get(arr, 0)            // Access array element
-get(obj, "key")        // Access with string key
-get(obj, computedKey)  // Access with computed key
+obj.property
+obj.nested.deep.value
+context.digit
 ```
 
-**Note:** Dot notation (`obj.property`) is not currently supported. Use `get()` instead.
+### Bracket Notation
+
+Access array elements or object properties with computed keys:
+
+```javascript
+arr[0]              // Array element access
+arr[index]          // Dynamic array access
+obj["key"]          // Object property with string key
+obj[computedKey]    // Object property with computed key
+```
+
+Both dot notation and bracket notation compile to property access operations.
 
 ## Comments
 
@@ -277,7 +290,7 @@ for i = 0; i < 5; i = i + 1 {
 }
 ```
 
-This expands to a recursive loop in S-expressions. All three clauses are optional:
+This expands to a recursive loop implementation. All three clauses are optional:
 omit `init` or `update` by leaving the slot empty (`for (; condition; ) { ... }`), and the
 test defaults to `true` when omitted.
 
@@ -312,25 +325,6 @@ test defaults to `true` when omitted.
 }
 ```
 
-## S-Expression Mapping
-
-| MiniJS           | S-Expression           |
-| ---------------- | ---------------------- |
-| `42`             | `42`                   |
-| `"hello"`        | `"\u0000STR:hello"`    |
-| `true` / `false` | `true` / `false`       |
-| `null`           | `null`                 |
-| `[1, 2, 3]`      | `(list 1 2 3)`         |
-| `a + b`          | `(+ a b)`              |
-| `a == b`         | `(= a b)`              |
-| `a && b`         | `(and a b)`            |
-| `!a`             | `(not a)`              |
-| `a ? b : c`      | `(if a b c)`           |
-| `x => x * 2`     | `(lambda (x) (* x 2))` |
-| `f(a, b)`        | `(f a b)`              |
-| `obj.prop`       | `(get obj "prop")`     |
-| `arr[i]`         | `(get arr i)`          |
-| `{ f(x) { x } }` | `(define (f x) x)`     |
 
 ## Differences from JavaScript
 
@@ -354,10 +348,16 @@ MiniJS code has access to all seval primitives:
 - `str(value)` - Convert to string
 - `parse-num(str)` / `parseNum(str)` - Parse string to number
 
-### Arithmetic
+### Math
 
-- `round(n)`, `floor(n)`, `ceil(n)`
-- `abs(n)`, `min(a, b)`, `max(a, b)`
+Math functions are accessed through the `Math` namespace:
+
+- `Math.round(n)` - Round to nearest integer
+- `Math.floor(n)` - Round down
+- `Math.ceil(n)` - Round up
+- `Math.abs(n)` - Absolute value
+- `Math.min(a, b, ...)` - Minimum value
+- `Math.max(a, b, ...)` - Maximum value
 
 ### String
 
@@ -365,24 +365,45 @@ MiniJS code has access to all seval primitives:
 - `strContains(s, substr)`, `strStartsWith(s, prefix)`
 - `concat(a, b)`
 
-### List/Array
+### Array
 
-- `list(...)` - Create list
-- `length(list)` - Get length
-- `nth(list, index)` - Get element at index
-- `first(list)`, `rest(list)`
-- `append(list, item)` - Append item
-- `prepend(list, item)` - Prepend item
-- `map(fn, list)`, `filter(fn, list)`, `reduce(fn, init, list)`
+Arrays are created using bracket syntax `[...]`:
+
+```javascript
+[]                    // Empty array
+[1, 2, 3]            // Array with elements
+["a", "b"]           // String array
+[1, "two", true]     // Mixed types
+```
+
+Array methods:
+
+- `arr.length` - Get array length
+- `arr[index]` - Get element at index
+- `arr.first()` - Get first element
+- `arr.rest()` - Get all elements except first
+- `arr.append(item)` - Append item (returns new array)
+- `arr.prepend(item)` - Prepend item (returns new array)
+- `arr.map(fn)` - Map function over array
+- `arr.filter(fn)` - Filter array
+- `arr.reduce(fn, init)` - Reduce array
 
 ### Object
 
-- `obj(key1, val1, key2, val2, ...)` - Create object
-- `get(obj, key)` - Get property
-- `set(obj, key, value)` - Set property (returns new object)
-- `keys(obj)` - Get all keys
-- `merge(obj1, obj2)` - Merge objects
+Objects are created using brace syntax `{...}`:
 
-### Utility
+```javascript
+{}                           // Empty object
+{ name: "Alice", age: 30 }  // Object with properties
+```
 
-- `now()` - Current timestamp in milliseconds
+Object methods:
+
+- `obj.keys()` - Get all keys
+- `obj.merge(other)` - Merge with another object (returns new object)
+
+### Time
+
+Time functions are accessed through the `Time` namespace:
+
+- `Time.now()` - Current timestamp in milliseconds
