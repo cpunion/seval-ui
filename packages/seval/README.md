@@ -44,6 +44,10 @@ const extendedEnv = env.bind({
 
 const result3 = executeSeval(extendedEnv, 'mul', [5, 6])
 console.log(result3) // 30
+
+// Evaluate expressions with nested calls
+const result4 = extendedEnv.eval('greet(mul(5, 6))')
+console.log(result4) // "Hello, 30!"
 ```
 
 ## Features
