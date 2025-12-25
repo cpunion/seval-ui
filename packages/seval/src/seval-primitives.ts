@@ -85,6 +85,7 @@ export const primitives: Record<string, any> = {
 
 	// Internal: Proxy wrappers for sandbox protection
 	// These prevent access to dangerous reflection properties
+	// biome-ignore lint/suspicious/noExplicitAny: dynamic object creation requires any
 	__createObject: (props: Record<string, any>) => {
 		const FORBIDDEN = ['constructor', '__proto__', 'prototype']
 		const obj = Object.assign({}, props)
@@ -104,6 +105,7 @@ export const primitives: Record<string, any> = {
 		})
 	},
 
+	// biome-ignore lint/suspicious/noExplicitAny: dynamic array creation requires any
 	__createArray: (...items: any[]) => {
 		const FORBIDDEN = ['constructor', '__proto__', 'prototype']
 		return new Proxy([...items], {

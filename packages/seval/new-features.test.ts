@@ -7,7 +7,7 @@
 
 import { describe, expect, test } from 'bun:test'
 import { compileSeval } from './src/seval'
-import { Tokenizer, TokenType } from './src/seval-tokenizer'
+import { TokenType, Tokenizer } from './src/seval-tokenizer'
 
 describe('Line Comments', () => {
 	test('should skip single-line comments', () => {
@@ -50,7 +50,7 @@ describe('Line Comments', () => {
 			url: "https://example.com"
 		}`
 		const env = compileSeval(code)
-		expect(env.url).toBe("https://example.com")
+		expect(env.url).toBe('https://example.com')
 	})
 
 	test('tokenizer should produce NEWLINE after comment', () => {
@@ -84,7 +84,7 @@ describe('Strict Equality Operators', () => {
 		}`
 		const env = compileSeval(code)
 		expect(env.check(1, 1)).toBe(true)
-		expect(env.check(1, "1")).toBe(false)
+		expect(env.check(1, '1')).toBe(false)
 		expect(env.check(null, null)).toBe(true)
 	})
 
@@ -94,7 +94,7 @@ describe('Strict Equality Operators', () => {
 		}`
 		const env = compileSeval(code)
 		expect(env.check(1, 1)).toBe(false)
-		expect(env.check(1, "1")).toBe(true)
+		expect(env.check(1, '1')).toBe(true)
 		expect(env.check(null, undefined)).toBe(true)
 	})
 
