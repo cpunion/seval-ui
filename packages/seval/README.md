@@ -87,7 +87,7 @@ console.log(result4) // "Hello, 30!"
   // For loops
   sum() {
     total = 0
-    for (i = 0; i < 10; i = i + 1) {
+    for i = 0; i < 10; i = i + 1 {
       total = total + i
     }
   }

@@ -2,7 +2,7 @@
  * Showcase Page
  *
  * Comprehensive demo of A2UI components
- * Logic powered by MiniJS
+ * Logic powered by Seval
  */
 
 import { A2UIProvider, createA2UIStore, defaultComponents } from '@seval-ui/react'
@@ -25,7 +25,7 @@ export function ShowcasePage() {
 	return (
 		<div className="showcase-page">
 			<h1>Component Showcase</h1>
-			<p className="subtitle">All A2UI components with MiniJS logic</p>
+			<p className="subtitle">All A2UI components with Seval logic</p>
 			<div className="showcase-container">
 				<A2UIProvider store={store} components={components} />
 			</div>

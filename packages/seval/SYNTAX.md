@@ -1,6 +1,6 @@
-# MiniJS Syntax Specification
+# Seval Syntax Specification
 
-MiniJS is a JavaScript-like DSL designed to be embedded in JSON configurations and evaluated using the seval runtime.
+Seval is a JavaScript-like DSL designed to be embedded in JSON configurations and evaluated using the seval runtime.
 
 ## Literals
 
@@ -239,7 +239,7 @@ Multi-line comments are not supported.
 
 ## Component Objects and State
 
-MiniJS programs are usually written as a single object literal. Properties declared with
+Seval programs are usually written as a single object literal. Properties declared with
 `name: value` become object properties. To access these properties from methods, use `this`:
 
 ```javascript
@@ -282,25 +282,25 @@ many times, and `else` is optional.
 
 ### For Loops
 
-MiniJS supports two forms of `for` loops:
+Seval supports two forms of `for` loops (without parentheses, similar to Go):
 
 **Traditional three-part syntax:**
 
 ```javascript
 sum = 0
-for (i = 0; i < 5; i = i + 1) {
+for i = 0; i < 5; i = i + 1 {
   sum = sum + i
 }
 ```
 
 All three clauses are optional: omit `init` or `update` by leaving the slot empty
-(`for (; condition; ) { ... }`), and the test defaults to `true` when omitted.
+(`for ; condition; { ... }`), and the test defaults to `true` when omitted.
 
 **Simplified condition-only syntax:**
 
 ```javascript
 i = 0
-for (i < 5) {
+for i < 5 {
   sum = sum + i
   i = i + 1
 }
@@ -343,7 +343,7 @@ are handled separately.
 
 ## Differences from JavaScript
 
-| Feature        | MiniJS                                    | JavaScript                 |
+| Feature        | Seval                                    | JavaScript                 |
 | -------------- | ----------------------------------------- | -------------------------- |
 | Equality       | `==` is strict (like `===`)               | `==` is loose              |
 | Logical ops    | Return boolean                            | Return operand             |
@@ -352,13 +352,13 @@ are handled separately.
 | Semicolons     | Optional (newlines separate statements)   | Optional (ASI)             |
 | Object syntax  | Method shorthand + property syntax        | Full object literals       |
 | Classes        | Not supported                             | Supported                  |
-| Loops          | `for (init; test; update)` and `for test` | `for`, `while`, `do`, etc. |
+| Loops          | `for init; test; update` and `for test` (no parens) | `for`, `while`, `do`, etc. |
 | Property access| Dot and bracket notation                  | Same                       |
 | Functions      | Arrow functions and method definitions    | Multiple syntaxes          |
 
 ## Built-in Functions (from seval)
 
-MiniJS code has access to all seval primitives:
+Seval code has access to all seval primitives:
 
 ### Universal Properties
 
