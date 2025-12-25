@@ -52,6 +52,7 @@ export interface FunctionDef {
 	name: string
 	params: string[]
 	body: ASTNode
+	isProperty?: boolean // true if defined as `name: value`, false/undefined if `name() { body }`
 }
 
 export interface CallExpression {

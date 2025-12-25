@@ -8,11 +8,9 @@ describe('Object Property Syntax', () => {
 			age: 30
 		}`
 		const env = compileSeval(code)
-		// Properties are stored as zero-parameter functions
-		const name = executeSeval(env, 'name', [])
-		const age = executeSeval(env, 'age', [])
-		expect(name).toBe('Alice')
-		expect(age).toBe(30)
+		// Properties are now stored as values, not functions
+		expect(env.name).toBe('Alice')
+		expect(env.age).toBe(30)
 	})
 
 	it('should support array and object literal properties', () => {
@@ -21,22 +19,19 @@ describe('Object Property Syntax', () => {
 			user: { name: "Bob", age: 25 }
 		}`
 		const env = compileSeval(code)
-		const items = executeSeval(env, 'items', [])
-		const user = executeSeval(env, 'user', [])
-		expect(items).toEqual([1, 2, 3])
-		expect(user).toEqual({ name: 'Bob', age: 25 })
+		expect(env.items).toEqual([1, 2, 3])
+		expect(env.user).toEqual({ name: 'Bob', age: 25 })
 	})
 
 	it('should support methods accessing properties', () => {
 		const code = `{
 			count: 0,
 			getCount() {
-				this.count()
+				this.count
 			}
 		}`
 		const env = compileSeval(code)
-		const count = executeSeval(env, 'count', [])
-		expect(count).toBe(0)
+		expect(env.count).toBe(0)
 		const result = executeSeval(env, 'getCount', [])
 		expect(result).toBe(0)
 	})

@@ -68,6 +68,7 @@ export class Parser {
 					name,
 					params: [],
 					body: value,
+					isProperty: true, // Mark as property
 				})
 			} else if (this.peek().type === TokenType.LPAREN) {
 				// Method definition: name(params) { body }
