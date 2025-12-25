@@ -206,6 +206,52 @@ export class Interpreter {
 				return null
 			}
 
+			case 'AssignmentStatement': {
+				// Evaluate the value first
+				const value = this.evaluate(node.value, env)
+
+				// Handle different assignment targets
+				if (node.target.kind === 'Identifier') {
+					// Simple variable assignment: x = value
+					const varName = node.target.name
+
+					// Check if variable exists in local env or global env
+					if (varName in env) {
+						env[varName] = value
+					} else if (varName in this.globalEnv) {
+						this.globalEnv[varName] = value
+					} else {
+						// Create new variable in current environment
+						env[varName] = value
+					}
+				} else if (node.target.kind === 'MemberExpression') {
+					// Property assignment: obj.prop = value or obj[key] = value
+					const object = this.evaluate(node.target.object, env)
+
+					if (object === null || object === undefined) {
+						throw new Error('Cannot set property of null or undefined')
+					}
+
+					if (typeof object !== 'object') {
+						throw new Error('Cannot set property on non-object')
+					}
+
+					// Get property name
+					let propName: string
+					if (node.target.computed) {
+						const prop = this.evaluate(node.target.property as ASTNode, env)
+						propName = String(prop)
+					} else {
+						propName = node.target.property as string
+					}
+					// Set property
+					;(object as ValueObject)[propName] = value
+				}
+
+				// Assignment returns the assigned value
+				return value
+			}
+
 			case 'CallExpression': {
 				// Handle arrow function or identifier callee
 				let sFunc: SFunction | undefined

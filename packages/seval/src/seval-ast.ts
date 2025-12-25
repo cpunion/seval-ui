@@ -15,6 +15,7 @@ export type ASTNode =
 	| ArrayLiteral
 	| ObjectLiteral
 	| MemberExpression
+	| AssignmentStatement
 	| PropertyDef
 	| FunctionDef
 
@@ -72,6 +73,12 @@ export interface MemberExpression {
 	object: ASTNode
 	property: string | ASTNode // string for dot notation, ASTNode for bracket notation
 	computed: boolean // true for arr[0], false for obj.prop
+}
+
+export interface AssignmentStatement {
+	kind: 'AssignmentStatement'
+	target: Identifier | MemberExpression // variable or property
+	value: ASTNode
 }
 
 export interface ArrowFunction {

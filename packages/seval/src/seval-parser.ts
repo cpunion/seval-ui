@@ -143,9 +143,33 @@ export class Parser {
 	// Parse expression (entry point for expression parsing)
 	private parseExpression(): ASTNode {
 		this.checkDepth()
-		const result = this.parseTernary()
+		const result = this.parseAssignment()
 		this.depth--
 		return result
+	}
+
+	// Parse assignment: target = value
+	private parseAssignment(): ASTNode {
+		const expr = this.parseTernary()
+
+		// Check if this is an assignment
+		if (this.peek().type === TokenType.ASSIGN) {
+			// Validate that left side is assignable
+			if (expr.kind !== 'Identifier' && expr.kind !== 'MemberExpression') {
+				throw new Error('Invalid assignment target')
+			}
+
+			this.advance() // consume =
+			const value = this.parseAssignment() // Right-associative
+
+			return {
+				kind: 'AssignmentStatement',
+				target: expr as import('./seval-ast').Identifier | import('./seval-ast').MemberExpression,
+				value,
+			}
+		}
+
+		return expr
 	}
 
 	// Parse ternary: condition ? consequent : alternate
