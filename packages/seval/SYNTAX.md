@@ -178,7 +178,8 @@ Function bodies support multiple statements, one per line:
 **Rules for multi-line bodies:**
 
 - Each line is a separate statement/expression
-- Statements are separated by newlines
+- Statements are separated by newlines or semicolons (`;`)
+- Semicolons are optional but can be used to separate multiple statements on one line
 - A line continues if it ends with a binary operator (`+`, `-`, `*`, `/`, `?`, `:`, `&&`, `||`, etc.)
 - The last expression is the implicit return value
 - Multiple statements compile to `(progn stmt1 stmt2 ... lastExpr)`
