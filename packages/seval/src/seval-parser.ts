@@ -172,7 +172,7 @@ export class Parser {
 
 		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
 			// Parse statement/expression
-			statements.push(this.parseAssignment())
+			statements.push(this.parseStatement())
 
 			// Skip newlines and semicolons after statement
 			while (this.peek().type === TokenType.NEWLINE || this.peek().type === TokenType.SEMICOLON) {
@@ -200,6 +200,66 @@ export class Parser {
 			kind: 'BlockExpression',
 			statements,
 		}
+	}
+
+	// Parse statement (if statement or expression)
+	private parseStatement(): ASTNode {
+		// Check for if statement
+		if (this.peek().type === TokenType.IF) {
+			return this.parseIfStatement()
+		}
+
+		// Otherwise parse as expression/assignment
+		return this.parseAssignment()
+	}
+
+	// Parse if statement: if (condition) { ... } elif (condition) { ... } else { ... }
+	private parseIfStatement(): ASTNode {
+		this.expect(TokenType.IF)
+		this.skipNewlines()
+
+		// Parse condition
+		const condition = this.parseExpression()
+		this.skipNewlines()
+
+		// Parse consequent block
+		const consequent = this.parseFunctionBody()
+		this.skipNewlines()
+
+		// Check for elif or else
+		const alternate = this.parseElseOrElif()
+
+		return {
+			kind: 'IfStatement',
+			condition,
+			consequent,
+			alternate,
+		}
+	}
+
+	private parseElseOrElif(): ASTNode | undefined {
+		if (this.peek().type === TokenType.ELIF) {
+			this.advance() // consume 'elif'
+			this.skipNewlines()
+
+			const condition = this.parseExpression()
+			this.skipNewlines()
+			const consequent = this.parseFunctionBody()
+			this.skipNewlines()
+
+			return {
+				kind: 'IfStatement',
+				condition,
+				consequent,
+				alternate: this.parseElseOrElif() // Recursively handle more elif/else
+			}
+		} else if (this.peek().type === TokenType.ELSE) {
+			this.advance() // consume 'else'
+			this.skipNewlines()
+			return this.parseFunctionBody()
+		}
+
+		return undefined
 	}
 
 	// Parse expression (entry point for expression parsing)

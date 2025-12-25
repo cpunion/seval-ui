@@ -125,7 +125,7 @@ export class Interpreter {
 						propName = node.target.property as string
 					}
 					// Set property
-					;(object as ValueObject)[propName] = value
+					; (object as ValueObject)[propName] = value
 				}
 
 				// Assignment returns the assigned value
@@ -265,6 +265,20 @@ export class Interpreter {
 				}
 				this.globalEnv[node.name] = func
 				return func
+			}
+
+			case 'IfStatement': {
+				const condition = this.evaluate(node.condition, env)
+
+				if (condition) {
+					return this.evaluate(node.consequent, env)
+				}
+
+				if (node.alternate) {
+					return this.evaluate(node.alternate, env)
+				}
+
+				return null
 			}
 
 			default:
