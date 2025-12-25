@@ -149,7 +149,17 @@ export class SevalCompiler {
 			}
 
 			case 'AssignmentStatement': {
-				const target = this.compileExpression(node.target, params)
+				// Assignment target should never use primitives.xxx
+				// Force it to use this.xxx to avoid polluting primitives
+				const targetNode = node.target
+				let target: string
+				if (targetNode.kind === 'Identifier') {
+					// For identifiers, always use this.xxx for assignment targets
+					target = `this.${targetNode.name}`
+				} else {
+					// For member expressions, compile normally
+					target = this.compileExpression(targetNode, params)
+				}
 				const value = this.compileExpression(node.value, params)
 				return `(${target} = ${value})`
 			}
@@ -162,7 +172,8 @@ export class SevalCompiler {
 
 			case 'ArrayLiteral': {
 				const elements = node.elements.map((el) => this.compileExpression(el, params)).join(', ')
-				return `[${elements}]`
+				// Use Proxy wrapper for sandbox protection
+				return `primitives.__createArray(${elements})`
 			}
 
 			case 'ObjectLiteral': {

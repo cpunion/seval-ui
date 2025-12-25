@@ -74,16 +74,6 @@ export const primitives: Record<string, any> = {
 		if (obj == null) return null
 		return obj[key] ?? null
 	},
-
-	// Array helpers
-	length: (arr) => (Array.isArray(arr) ? arr.length : 0),
-	append: (arr, item) => (Array.isArray(arr) ? [...arr, item] : [item]),
-	filter: (fn, arr) => (Array.isArray(arr) ? arr.filter(fn) : []),
-	map: (fn, arr) => (Array.isArray(arr) ? arr.map(fn) : []),
-	nth: (arr, idx) => (Array.isArray(arr) ? (arr[idx] ?? null) : null),
-	first: (arr) => (Array.isArray(arr) && arr.length > 0 ? arr[0] : null),
-	last: (arr) => (Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1] : null),
-
 	// Whitelisted global objects (for sandbox safety)
 	Math: Math,
 	Number: Number,

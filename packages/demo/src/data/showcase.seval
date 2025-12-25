@@ -1,55 +1,60 @@
 {
   action_increment() {
-    [["counter", counter + 1], ["counterText", "Count: " + (counter + 1)]]
-  },
+    this.counter = this.counter + 1
+    this.counterText = "Count: " + this.counter
+  }
 
   action_decrement() {
-    [["counter", counter - 1], ["counterText", "Count: " + (counter - 1)]]
-  },
+    this.counter = this.counter - 1
+    this.counterText = "Count: " + this.counter
+  }
 
   action_reset() {
-    [["counter", 0], ["counterText", "Count: 0"]]
-  },
+    this.counter = 0
+    this.counterText = "Count: 0"
+  }
 
   action_selectItem() {
-    [["selectedItem", get(context, "name")]]
-  },
+    this.selectedItem = get(context, "name")
+  }
 
   action_addTodo() {
-    todoInput == ""
-      ? []
-      : [
-          ["todos", append(todos, obj("id", nextTodoId, "text", todoInput, "done", false))],
-          ["nextTodoId", nextTodoId + 1],
-          ["todoInput", ""],
-          ["todoStats", length(filter((t) => get(t, "done"), append(todos, obj("id", nextTodoId, "text", todoInput, "done", false)))) + " of " + (length(todos) + 1) + " completed"]
-        ]
-  },
+    if (todoInput == "") {
+      null
+    } else {
+      newTodos = todos.concat([obj("id", nextTodoId, "text", todoInput, "done", false)])
+      this.todos = newTodos
+      this.nextTodoId = nextTodoId + 1
+      this.todoInput = ""
+      this.todoStats = newTodos.filter(t => get(t, "done")).length + " of " + newTodos.length + " completed"
+    }
+  }
 
   action_deleteTodo() {
-    [
-      ["todos", filter((t) => get(t, "id") != get(context, "id"), todos)],
-      ["todoStats", length(filter((t) => get(t, "done"), filter((t) => get(t, "id") != get(context, "id"), todos))) + " of " + length(filter((t) => get(t, "id") != get(context, "id"), todos)) + " completed"]
-    ]
-  },
+    newTodos = todos.filter(t => get(t, "id") != get(context, "id"))
+    this.todos = newTodos
+    this.todoStats = newTodos.filter(t => get(t, "done")).length + " of " + newTodos.length + " completed"
+  }
 
   action_submitForm() {
-    formName == "" || formEmail == ""
-      ? [["formResultText", "Please fill in Name and Email"]]
-      : [
-          ["formSubmitted", true],
-          ["formResultText", "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)]
-        ]
-  },
+    if (formName == "" || formEmail == "") {
+      this.formResultText = "Please fill in Name and Email"
+    } else {
+      this.formSubmitted = true
+      this.formResultText = "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)
+    }
+  }
 
   action_resetForm() {
-    [["formName", ""], ["formEmail", ""], ["formMessage", ""], ["formSubmitted", false], ["formResultText", ""]]
-  },
+    this.formName = ""
+    this.formEmail = ""
+    this.formMessage = ""
+    this.formSubmitted = false
+    this.formResultText = ""
+  }
 
   updateDerived() {
-    [
-      ["checkedText", isChecked ? "Checked!" : "Unchecked"],
-      ["todoStats", length(filter((t) => get(t, "done"), todos)) + " of " + length(todos) + " completed"]
-    ]
+    this.checkedText = isChecked ? "Checked!" : "Unchecked"
+    this.todoStats = todos.filter(t => get(t, "done")).length + " of " + todos.length + " completed"
   }
 }

@@ -19,30 +19,55 @@ export class Parser {
 		this.tokens = tokens
 	}
 
-	private peek(offset = 0): Token {
-		// biome-ignore lint/style/noNonNullAssertion: Fallback to last token
-		return this.tokens[this.pos + offset] || this.tokens[this.tokens.length - 1]!
-	}
+	/**
+	 * Peek at next token
+	 * @param skipNewlines - if true, skip over NEWLINE tokens (default: true for expression context)
+	 */
+	private peek(skipNewlines = true): Token {
+		let pos = this.pos
 
-	private advance(): Token {
-		// biome-ignore lint/style/noNonNullAssertion: Token always exists
-		return this.tokens[this.pos++]!
-	}
-
-	private skipNewlines(): void {
-		while (this.peek().type === TokenType.NEWLINE) {
-			this.advance()
+		if (skipNewlines) {
+			// Skip newlines to peek at next significant token
+			while (pos < this.tokens.length && this.tokens[pos].type === TokenType.NEWLINE) {
+				pos++
+			}
 		}
+
+		// biome-ignore lint/style/noNonNullAssertion: Fallback to last token
+		return this.tokens[pos] || this.tokens[this.tokens.length - 1]!
 	}
 
-	private expect(type: TokenType): Token {
-		const token = this.advance()
+	/**
+	 * Advance to next token
+	 * @param skipNewlines - if true, skip over NEWLINE tokens after advancing (default: true)
+	 */
+	private advance(skipNewlines = true): Token {
+		// biome-ignore lint/style/noNonNullAssertion: Token always exists
+		const token = this.tokens[this.pos++]!
+
+		if (skipNewlines) {
+			// Skip subsequent newlines
+			while (this.pos < this.tokens.length && this.tokens[this.pos].type === TokenType.NEWLINE) {
+				this.pos++
+			}
+		}
+
+		return token
+	}
+
+	/**
+	 * Expect a specific token type
+	 * @param type - expected token type
+	 * @param skipNewlines - if true, skip newlines before checking (default: true)
+	 */
+	private expect(type: TokenType, skipNewlines = true): Token {
+		const token = this.peek(skipNewlines)
 		if (token.type !== type) {
 			throw new Error(
 				`Expected ${type} but got ${token.type} at line ${token.line}, column ${token.column}`,
 			)
 		}
-		return token
+		return this.advance(skipNewlines)
 	}
 
 	private checkDepth(): void {
@@ -159,33 +184,32 @@ export class Parser {
 
 	/**
 	 * Parse function body - supports multi-statement blocks
+	 * Newlines and semicolons are treated as statement separators
 	 */
 	private parseFunctionBody(): ASTNode {
 		this.expect(TokenType.LBRACE)
 
 		const statements: ASTNode[] = []
 
-		// Skip leading newlines and semicolons
-		while (this.peek().type === TokenType.NEWLINE || this.peek().type === TokenType.SEMICOLON) {
-			this.advance()
+		// Skip leading separators (newlines and semicolons)
+		while (
+			this.peek(false).type === TokenType.NEWLINE ||
+			this.peek(false).type === TokenType.SEMICOLON
+		) {
+			this.advance(false)
 		}
 
-		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
-			// Parse statement/expression
+		// Parse statements until closing brace
+		while (this.peek(false).type !== TokenType.RBRACE && this.peek(false).type !== TokenType.EOF) {
 			statements.push(this.parseStatement())
 
-			// Skip newlines and semicolons after statement
-			while (this.peek().type === TokenType.NEWLINE || this.peek().type === TokenType.SEMICOLON) {
-				this.advance()
+			// Skip separators after statement
+			while (
+				this.peek(false).type === TokenType.NEWLINE ||
+				this.peek(false).type === TokenType.SEMICOLON
+			) {
+				this.advance(false)
 			}
-
-			// Check if we're done (closing brace)
-			if (this.peek().type === TokenType.RBRACE) {
-				break
-			}
-
-			// If not closing brace and not EOF, there must be another statement
-			// (newlines and semicolons were already skipped above)
 		}
 
 		this.expect(TokenType.RBRACE)
@@ -216,15 +240,12 @@ export class Parser {
 	// Parse if statement: if (condition) { ... } elif (condition) { ... } else { ... }
 	private parseIfStatement(): ASTNode {
 		this.expect(TokenType.IF)
-		this.skipNewlines()
 
 		// Parse condition
 		const condition = this.parseExpression()
-		this.skipNewlines()
 
 		// Parse consequent block
 		const consequent = this.parseFunctionBody()
-		this.skipNewlines()
 
 		// Check for elif or else
 		const alternate = this.parseElseOrElif()
@@ -240,12 +261,9 @@ export class Parser {
 	private parseElseOrElif(): ASTNode | undefined {
 		if (this.peek().type === TokenType.ELIF) {
 			this.advance() // consume 'elif'
-			this.skipNewlines()
 
 			const condition = this.parseExpression()
-			this.skipNewlines()
 			const consequent = this.parseFunctionBody()
-			this.skipNewlines()
 
 			return {
 				kind: 'IfStatement',
@@ -256,7 +274,6 @@ export class Parser {
 		}
 		if (this.peek().type === TokenType.ELSE) {
 			this.advance() // consume 'else'
-			this.skipNewlines()
 			return this.parseFunctionBody()
 		}
 
@@ -272,7 +289,81 @@ export class Parser {
 	}
 
 	// Parse assignment: target = value
+	// Also handles arrow functions: x => expr, (x, y) => expr
 	private parseAssignment(): ASTNode {
+		// First, check if this might be an arrow function
+		// Arrow functions have lower precedence than assignment
+		const savedPos = this.pos
+
+		// Try to detect arrow function pattern: identifier => expr
+		if (this.peek().type === TokenType.IDENTIFIER) {
+			const identToken = this.peek()
+			this.advance() // consume identifier
+
+			if (this.peek().type === TokenType.ARROW) {
+				// It's an arrow function: x => expr
+				this.advance() // consume =>
+				const body = this.parseAssignment() // Parse body (right-associative)
+				return {
+					kind: 'ArrowFunction',
+					params: [identToken.value],
+					body,
+				}
+			}
+
+			// Not an arrow function, restore position
+			this.pos = savedPos
+		}
+
+		// Try to detect arrow function pattern: (params) => expr
+		if (this.peek().type === TokenType.LPAREN) {
+			const parenPos = this.pos
+			this.advance() // consume (
+
+			// Collect potential parameters
+			const params: string[] = []
+			let isArrowFunction = false
+
+			if (this.peek().type === TokenType.RPAREN) {
+				// () => expr
+				this.advance() // consume )
+				if (this.peek().type === TokenType.ARROW) {
+					isArrowFunction = true
+				}
+			} else if (this.peek().type === TokenType.IDENTIFIER) {
+				// (x) => expr or (x, y) => expr
+				params.push(this.advance().value)
+
+				while (this.peek().type === TokenType.COMMA) {
+					this.advance() // consume comma
+					if (this.peek().type === TokenType.IDENTIFIER) {
+						params.push(this.advance().value)
+					}
+				}
+
+				if (this.peek().type === TokenType.RPAREN) {
+					this.advance() // consume )
+					if (this.peek().type === TokenType.ARROW) {
+						isArrowFunction = true
+					}
+				}
+			}
+
+			if (isArrowFunction) {
+				this.advance() // consume =>
+				const body = this.parseAssignment()
+				return {
+					kind: 'ArrowFunction',
+					params,
+					body,
+				}
+			}
+
+			// Not an arrow function, restore position
+			this.pos = parenPos
+		}
+
+		// Not an arrow function, parse as normal expression
 		const expr = this.parseTernary()
 
 		// Check if this is an assignment
@@ -299,14 +390,10 @@ export class Parser {
 	private parseTernary(): ASTNode {
 		const expr = this.parseLogicalOr()
 
-		this.skipNewlines() // Skip newlines before checking for ?
 		if (this.peek().type === TokenType.QUESTION) {
 			this.advance()
-			this.skipNewlines()
 			const consequent = this.parseTernary()
-			this.skipNewlines()
 			this.expect(TokenType.COLON)
-			this.skipNewlines()
 			const alternate = this.parseTernary()
 
 			return {
@@ -326,7 +413,6 @@ export class Parser {
 
 		while (this.peek().type === TokenType.OR) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseLogicalAnd()
 			left = {
 				kind: 'BinaryExpression',
@@ -345,7 +431,6 @@ export class Parser {
 
 		while (this.peek().type === TokenType.AND) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseEquality()
 			left = {
 				kind: 'BinaryExpression',
@@ -364,7 +449,6 @@ export class Parser {
 
 		while (this.peek().type === TokenType.EQ || this.peek().type === TokenType.NE) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseRelational()
 			left = {
 				kind: 'BinaryExpression',
@@ -388,7 +472,6 @@ export class Parser {
 			this.peek().type === TokenType.GE
 		) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseAdditive()
 			left = {
 				kind: 'BinaryExpression',
@@ -407,7 +490,6 @@ export class Parser {
 
 		while (this.peek().type === TokenType.PLUS || this.peek().type === TokenType.MINUS) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseMultiplicative()
 			left = {
 				kind: 'BinaryExpression',
@@ -430,7 +512,6 @@ export class Parser {
 			this.peek().type === TokenType.PERCENT
 		) {
 			const op = this.advance()
-			this.skipNewlines()
 			const right = this.parseUnary()
 			left = {
 				kind: 'BinaryExpression',
@@ -466,18 +547,14 @@ export class Parser {
 			if (this.peek().type === TokenType.LPAREN) {
 				// Function call
 				this.advance()
-				this.skipNewlines()
 				const args: ASTNode[] = []
 
 				while (this.peek().type !== TokenType.RPAREN) {
 					args.push(this.parseExpression())
-					this.skipNewlines() // Skip newlines after argument
 					if (this.peek().type === TokenType.COMMA) {
 						this.advance()
-						this.skipNewlines()
 					}
 				}
-				this.skipNewlines()
 				this.expect(TokenType.RPAREN)
 
 				expr = {
@@ -498,9 +575,7 @@ export class Parser {
 			} else if (this.peek().type === TokenType.LBRACKET) {
 				// Bracket notation: arr[index] or obj["key"]
 				this.advance() // consume [
-				this.skipNewlines()
 				const property = this.parseExpression() // Changed from 'index' to 'property' to match AST node structure
-				this.skipNewlines()
 				this.expect(TokenType.RBRACKET)
 				expr = {
 					kind: 'MemberExpression',
@@ -519,7 +594,6 @@ export class Parser {
 	// Parse primary: number, string, boolean, identifier, array, object, (expr)
 	private parsePrimary(): ASTNode {
 		// Skip newlines before parsing primary expression
-		this.skipNewlines()
 
 		const token = this.peek()
 
@@ -565,16 +639,23 @@ export class Parser {
 
 		if (token.type === TokenType.IDENTIFIER) {
 			// Check if this is an arrow function: x => expr
-			if (this.peek(1).type === TokenType.ARROW) {
-				const param = this.advance() // consume identifier
+			// Save position to check next token
+			const savedPos = this.pos
+			const nextToken = this.peek()
+
+			if (nextToken.type === TokenType.ARROW) {
+				// It's an arrow function
 				this.advance() // consume =>
 				const body = this.parseExpression()
 				return {
 					kind: 'ArrowFunction',
-					params: [param.value],
+					params: [token.value],
 					body,
 				}
 			}
+
+			// Not an arrow function, restore position and treat as identifier
+			this.pos = savedPos
 			this.advance()
 			return {
 				kind: 'Identifier',
@@ -585,17 +666,14 @@ export class Parser {
 		if (token.type === TokenType.LBRACKET) {
 			// Array literal
 			this.advance()
-			this.skipNewlines()
 			const elements: ASTNode[] = []
 
 			while (this.peek().type !== TokenType.RBRACKET) {
 				elements.push(this.parseExpression())
 				if (this.peek().type === TokenType.COMMA) {
 					this.advance()
-					this.skipNewlines()
 				}
 			}
-			this.skipNewlines()
 			this.expect(TokenType.RBRACKET)
 			return {
 				kind: 'ArrayLiteral',

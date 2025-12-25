@@ -1,46 +1,77 @@
 {
-  hasDecimal(s) { strContains(str(s), ".") },
-  negateStr(s) { s == "0" ? "0" : strStartsWith(s, "-") ? substr(s, 1) : "-" + s },
-  formatNum(n) { str(round(n * 1000000000) / 1000000000) },
+  hasDecimal(s) { String(s).includes(".") },
+  negateStr(s) { s == "0" ? "0" : String(s).startsWith("-") ? String(s).substring(1) : "-" + s },
+  formatNum(n) { String(Math.round(n * 1000000000) / 1000000000) },
   calcOp(op, a, b) {
     formatNum(
-      op == "+" ? parseNum(a) + parseNum(b) :
-      op == "-" ? parseNum(a) - parseNum(b) :
-      op == "*" ? parseNum(a) * parseNum(b) :
-      op == "/" ? (parseNum(b) == 0 ? 0 : parseNum(a) / parseNum(b)) :
-      parseNum(b)
+      op == "+" ? Number.parseFloat(a) + Number.parseFloat(b) :
+      op == "-" ? Number.parseFloat(a) - Number.parseFloat(b) :
+      op == "*" ? Number.parseFloat(a) * Number.parseFloat(b) :
+      op == "/" ? (Number.parseFloat(b) == 0 ? 0 : Number.parseFloat(a) / Number.parseFloat(b)) :
+      Number.parseFloat(b)
     )
   },
 
   action_digit() {
-    waitingForOperand
-      ? [["display", str(get(context, "digit"))], ["waitingForOperand", false]]
-      : [["display", display + str(get(context, "digit"))]]
+    if (waitingForOperand) {
+      set("display", String(context.digit))
+      set("waitingForOperand", false)
+    } else {
+      set("display", display + String(context.digit))
+    }
   },
 
   action_decimal() {
-    waitingForOperand
-      ? [["display", "0."], ["waitingForOperand", false]]
-      : hasDecimal(display) ? [] : [["display", display + "."]]
+    if (waitingForOperand) {
+      set("display", "0.")
+      set("waitingForOperand", false)
+    } else {
+      if (!hasDecimal(display)) {
+        set("display", display + ".")
+      }
+    }
   },
 
   action_clear() {
-    [["display", "0"], ["memory", "0"], ["operator", ""], ["waitingForOperand", true], ["history", ""]]
+    set("display", "0")
+    set("memory", "0")
+    set("operator", "")
+    set("waitingForOperand", true)
+    set("history", "")
   },
 
-  action_negate() { [["display", negateStr(display)]] },
+  action_negate() {
+    set("display", negateStr(display))
+  },
 
-  action_percent() { [["display", formatNum(parseNum(display) / 100)]] },
+  action_percent() {
+    set("display", formatNum(Number.parseFloat(display) / 100))
+  },
 
   action_operator() {
-    operator == ""
-      ? [["memory", display], ["operator", get(context, "op")], ["waitingForOperand", true], ["history", display + " " + get(context, "op")]]
-      : [["display", calcOp(operator, memory, display)], ["memory", calcOp(operator, memory, display)], ["operator", get(context, "op")], ["waitingForOperand", true], ["history", calcOp(operator, memory, display) + " " + get(context, "op")]]
+    if (operator == "") {
+      set("memory", display)
+      set("operator", context.op)
+      set("waitingForOperand", true)
+      set("history", display + " " + context.op)
+    } else {
+      result = calcOp(operator, memory, display)
+      set("display", result)
+      set("memory", result)
+      set("operator", context.op)
+      set("waitingForOperand", true)
+      set("history", result + " " + context.op)
+    }
   },
 
   action_equals() {
-    operator == ""
-      ? []
-      : [["display", calcOp(operator, memory, display)], ["memory", "0"], ["operator", ""], ["waitingForOperand", true], ["history", history + " " + display + " = " + calcOp(operator, memory, display)]]
+    if (operator != "") {
+      result = calcOp(operator, memory, display)
+      set("display", result)
+      set("memory", "0")
+      set("operator", "")
+      set("waitingForOperand", true)
+      set("history", history + " " + display + " = " + result)
+    }
   }
 }

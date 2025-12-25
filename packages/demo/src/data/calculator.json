@@ -3,11 +3,26 @@
     "dataModelUpdate": {
       "surfaceId": "calculator",
       "contents": [
-        { "key": "display", "valueString": "0" },
-        { "key": "memory", "valueString": "0" },
-        { "key": "operator", "valueString": "" },
-        { "key": "waitingForOperand", "valueBoolean": true },
-        { "key": "history", "valueString": "" }
+        {
+          "key": "display",
+          "valueString": "0"
+        },
+        {
+          "key": "memory",
+          "valueString": "0"
+        },
+        {
+          "key": "operator",
+          "valueString": ""
+        },
+        {
+          "key": "waitingForOperand",
+          "valueBoolean": true
+        },
+        {
+          "key": "history",
+          "valueString": ""
+        }
       ]
     }
   },
@@ -20,39 +35,505 @@
           "component": {
             "Code": {
               "lang": "seval",
-              "code": "{\n  hasDecimal(s) { strContains(str(s), \".\") },\n  negateStr(s) { s == \"0\" ? \"0\" : strStartsWith(s, \"-\") ? substr(s, 1) : \"-\" + s },\n  formatNum(n) { str(round(n * 1000000000) / 1000000000) },\n  calcOp(op, a, b) {\n    formatNum(\n      op == \"+\" ? parseNum(a) + parseNum(b) :\n      op == \"-\" ? parseNum(a) - parseNum(b) :\n      op == \"*\" ? parseNum(a) * parseNum(b) :\n      op == \"/\" ? (parseNum(b) == 0 ? 0 : parseNum(a) / parseNum(b)) :\n      parseNum(b)\n    )\n  },\n\n  action_digit() {\n    waitingForOperand\n      ? [[\"display\", str(get(context, \"digit\"))], [\"waitingForOperand\", false]]\n      : [[\"display\", display + str(get(context, \"digit\"))]]\n  },\n\n  action_decimal() {\n    waitingForOperand\n      ? [[\"display\", \"0.\"], [\"waitingForOperand\", false]]\n      : hasDecimal(display) ? [] : [[\"display\", display + \".\"]]\n  },\n\n  action_clear() {\n    [[\"display\", \"0\"], [\"memory\", \"0\"], [\"operator\", \"\"], [\"waitingForOperand\", true], [\"history\", \"\"]]\n  },\n\n  action_negate() { [[\"display\", negateStr(display)]] },\n\n  action_percent() { [[\"display\", formatNum(parseNum(display) / 100)]] },\n\n  action_operator() {\n    operator == \"\"\n      ? [[\"memory\", display], [\"operator\", get(context, \"op\")], [\"waitingForOperand\", true], [\"history\", display + \" \" + get(context, \"op\")]]\n      : [[\"display\", calcOp(operator, memory, display)], [\"memory\", calcOp(operator, memory, display)], [\"operator\", get(context, \"op\")], [\"waitingForOperand\", true], [\"history\", calcOp(operator, memory, display) + \" \" + get(context, \"op\")]]\n  },\n\n  action_equals() {\n    operator == \"\"\n      ? []\n      : [[\"display\", calcOp(operator, memory, display)], [\"memory\", \"0\"], [\"operator\", \"\"], [\"waitingForOperand\", true], [\"history\", history + \" \" + display + \" = \" + calcOp(operator, memory, display)]]\n  }\n}"
+              "code": "{\n  hasDecimal(s) { String(s).includes(\".\") },\n  negateStr(s) { s == \"0\" ? \"0\" : String(s).startsWith(\"-\") ? String(s).substring(1) : \"-\" + s },\n  formatNum(n) { String(Math.round(n * 1000000000) / 1000000000) },\n  calcOp(op, a, b) {\n    formatNum(\n      op == \"+\" ? Number.parseFloat(a) + Number.parseFloat(b) :\n      op == \"-\" ? Number.parseFloat(a) - Number.parseFloat(b) :\n      op == \"*\" ? Number.parseFloat(a) * Number.parseFloat(b) :\n      op == \"/\" ? (Number.parseFloat(b) == 0 ? 0 : Number.parseFloat(a) / Number.parseFloat(b)) :\n      Number.parseFloat(b)\n    )\n  },\n\n  action_digit() {\n    if (waitingForOperand) {\n      set(\"display\", String(context.digit))\n      set(\"waitingForOperand\", false)\n    } else {\n      set(\"display\", display + String(context.digit))\n    }\n  },\n\n  action_decimal() {\n    if (waitingForOperand) {\n      set(\"display\", \"0.\")\n      set(\"waitingForOperand\", false)\n    } else {\n      if (!hasDecimal(display)) {\n        set(\"display\", display + \".\")\n      }\n    }\n  },\n\n  action_clear() {\n    set(\"display\", \"0\")\n    set(\"memory\", \"0\")\n    set(\"operator\", \"\")\n    set(\"waitingForOperand\", true)\n    set(\"history\", \"\")\n  },\n\n  action_negate() {\n    set(\"display\", negateStr(display))\n  },\n\n  action_percent() {\n    set(\"display\", formatNum(Number.parseFloat(display) / 100))\n  },\n\n  action_operator() {\n    if (operator == \"\") {\n      set(\"memory\", display)\n      set(\"operator\", context.op)\n      set(\"waitingForOperand\", true)\n      set(\"history\", display + \" \" + context.op)\n    } else {\n      result = calcOp(operator, memory, display)\n      set(\"display\", result)\n      set(\"memory\", result)\n      set(\"operator\", context.op)\n      set(\"waitingForOperand\", true)\n      set(\"history\", result + \" \" + context.op)\n    }\n  },\n\n  action_equals() {\n    if (operator != \"\") {\n      result = calcOp(operator, memory, display)\n      set(\"display\", result)\n      set(\"memory\", \"0\")\n      set(\"operator\", \"\")\n      set(\"waitingForOperand\", true)\n      set(\"history\", history + \" \" + display + \" = \" + result)\n    }\n  }\n}\n"
             }
           }
         },
-        { "id": "root", "component": { "Column": { "children": { "explicitList": ["code", "display-card", "history-row", "buttons-grid"] } } } },
-        { "id": "display-card", "component": { "Card": { "child": "display-text" } } },
-        { "id": "display-text", "component": { "Text": { "text": { "path": "/display" }, "usageHint": "h1" } } },
-        { "id": "history-row", "component": { "Text": { "text": { "path": "/history" }, "usageHint": "body" } } },
-        { "id": "buttons-grid", "component": { "Column": { "children": { "explicitList": ["row-1", "row-2", "row-3", "row-4", "row-5"] } } } },
-        { "id": "row-1", "component": { "Row": { "children": { "explicitList": ["btn-clear", "btn-negate", "btn-percent", "btn-divide"] } } } },
-        { "id": "row-2", "component": { "Row": { "children": { "explicitList": ["btn-7", "btn-8", "btn-9", "btn-multiply"] } } } },
-        { "id": "row-3", "component": { "Row": { "children": { "explicitList": ["btn-4", "btn-5", "btn-6", "btn-subtract"] } } } },
-        { "id": "row-4", "component": { "Row": { "children": { "explicitList": ["btn-1", "btn-2", "btn-3", "btn-add"] } } } },
-        { "id": "row-5", "component": { "Row": { "children": { "explicitList": ["btn-0", "btn-decimal", "btn-equals"] } } } },
-        { "id": "btn-0", "component": { "Button": { "label": { "literalString": "0" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "0" } }] } } }, "weight": 2 },
-        { "id": "btn-1", "component": { "Button": { "label": { "literalString": "1" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "1" } }] } } } },
-        { "id": "btn-2", "component": { "Button": { "label": { "literalString": "2" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "2" } }] } } } },
-        { "id": "btn-3", "component": { "Button": { "label": { "literalString": "3" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "3" } }] } } } },
-        { "id": "btn-4", "component": { "Button": { "label": { "literalString": "4" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "4" } }] } } } },
-        { "id": "btn-5", "component": { "Button": { "label": { "literalString": "5" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "5" } }] } } } },
-        { "id": "btn-6", "component": { "Button": { "label": { "literalString": "6" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "6" } }] } } } },
-        { "id": "btn-7", "component": { "Button": { "label": { "literalString": "7" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "7" } }] } } } },
-        { "id": "btn-8", "component": { "Button": { "label": { "literalString": "8" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "8" } }] } } } },
-        { "id": "btn-9", "component": { "Button": { "label": { "literalString": "9" }, "action": { "name": "digit", "context": [{ "key": "digit", "value": { "literalString": "9" } }] } } } },
-        { "id": "btn-decimal", "component": { "Button": { "label": { "literalString": "." }, "action": { "name": "decimal" } } } },
-        { "id": "btn-add", "component": { "Button": { "label": { "literalString": "+" }, "action": { "name": "operator", "context": [{ "key": "op", "value": { "literalString": "+" } }] } } } },
-        { "id": "btn-subtract", "component": { "Button": { "label": { "literalString": "-" }, "action": { "name": "operator", "context": [{ "key": "op", "value": { "literalString": "-" } }] } } } },
-        { "id": "btn-multiply", "component": { "Button": { "label": { "literalString": "*" }, "action": { "name": "operator", "context": [{ "key": "op", "value": { "literalString": "*" } }] } } } },
-        { "id": "btn-divide", "component": { "Button": { "label": { "literalString": "/" }, "action": { "name": "operator", "context": [{ "key": "op", "value": { "literalString": "/" } }] } } } },
-        { "id": "btn-clear", "component": { "Button": { "label": { "literalString": "C" }, "action": { "name": "clear" } } } },
-        { "id": "btn-negate", "component": { "Button": { "label": { "literalString": "+/-" }, "action": { "name": "negate" } } } },
-        { "id": "btn-percent", "component": { "Button": { "label": { "literalString": "%" }, "action": { "name": "percent" } } } },
-        { "id": "btn-equals", "component": { "Button": { "label": { "literalString": "=" }, "action": { "name": "equals" } } } }
+        {
+          "id": "root",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "code",
+                  "display-card",
+                  "history-row",
+                  "buttons-grid"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "display-card",
+          "component": {
+            "Card": {
+              "child": "display-text"
+            }
+          }
+        },
+        {
+          "id": "display-text",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/display"
+              },
+              "usageHint": "h1"
+            }
+          }
+        },
+        {
+          "id": "history-row",
+          "component": {
+            "Text": {
+              "text": {
+                "path": "/history"
+              },
+              "usageHint": "body"
+            }
+          }
+        },
+        {
+          "id": "buttons-grid",
+          "component": {
+            "Column": {
+              "children": {
+                "explicitList": [
+                  "row-1",
+                  "row-2",
+                  "row-3",
+                  "row-4",
+                  "row-5"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "row-1",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-clear",
+                  "btn-negate",
+                  "btn-percent",
+                  "btn-divide"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "row-2",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-7",
+                  "btn-8",
+                  "btn-9",
+                  "btn-multiply"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "row-3",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-4",
+                  "btn-5",
+                  "btn-6",
+                  "btn-subtract"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "row-4",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-1",
+                  "btn-2",
+                  "btn-3",
+                  "btn-add"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "row-5",
+          "component": {
+            "Row": {
+              "children": {
+                "explicitList": [
+                  "btn-0",
+                  "btn-decimal",
+                  "btn-equals"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-0",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "0"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "0"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "weight": 2
+        },
+        {
+          "id": "btn-1",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "1"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "1"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-2",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "2"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "2"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-3",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "3"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "3"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-4",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "4"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "4"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-5",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "5"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "5"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-6",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "6"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "6"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-7",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "7"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "7"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-8",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "8"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "8"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-9",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "9"
+              },
+              "action": {
+                "name": "digit",
+                "context": [
+                  {
+                    "key": "digit",
+                    "value": {
+                      "literalString": "9"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-decimal",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "."
+              },
+              "action": {
+                "name": "decimal"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-add",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "+"
+              },
+              "action": {
+                "name": "operator",
+                "context": [
+                  {
+                    "key": "op",
+                    "value": {
+                      "literalString": "+"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-subtract",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "-"
+              },
+              "action": {
+                "name": "operator",
+                "context": [
+                  {
+                    "key": "op",
+                    "value": {
+                      "literalString": "-"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-multiply",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "*"
+              },
+              "action": {
+                "name": "operator",
+                "context": [
+                  {
+                    "key": "op",
+                    "value": {
+                      "literalString": "*"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-divide",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "/"
+              },
+              "action": {
+                "name": "operator",
+                "context": [
+                  {
+                    "key": "op",
+                    "value": {
+                      "literalString": "/"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-clear",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "C"
+              },
+              "action": {
+                "name": "clear"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-negate",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "+/-"
+              },
+              "action": {
+                "name": "negate"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-percent",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "%"
+              },
+              "action": {
+                "name": "percent"
+              }
+            }
+          }
+        },
+        {
+          "id": "btn-equals",
+          "component": {
+            "Button": {
+              "label": {
+                "literalString": "="
+              },
+              "action": {
+                "name": "equals"
+              }
+            }
+          }
+        }
       ]
     }
   },
