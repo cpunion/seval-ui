@@ -5,7 +5,7 @@
  * Uses TypeScript seval interpreter directly - no S-expression dependency.
  */
 
-import { type Environment, type Value, compileSeval, executeSeval } from "@seval-ui/seval/seval";
+import { type Environment, type Value, compileSeval, executeSeval } from "@seval-ui/seval";
 
 /**
  * Minimal store interface that SevalRuntime needs
@@ -218,7 +218,7 @@ export class SevalRuntime {
             // Apply updates to the data model
             // If set() was used, don't apply result updates (they would overwrite set() changes)
             if (!setWasCalled) {
-                this.applyUpdates(surface, result);
+                this.applyUpdates(surface, result as Value);
             } else if (!result) {
                 // set() was called but no result, increment version
                 surface.incrementVersion();
