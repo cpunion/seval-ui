@@ -85,10 +85,12 @@ console.log(result2) // 10
 
 The Seval runtime includes these built-in functions:
 
+- **Universal**: `value.type`, `value.str()`
 - **Arithmetic**: `+`, `-`, `*`, `/`, `%`
 - **Comparison**: `=`, `!=`, `<`, `<=`, `>`, `>=`
 - **Logic**: `and`, `or`, `not`
-- **String**: `str`, `parseNum`, `strContains`, `strStartsWith`, `substr`
+- **Number**: `Number.parse(str)`
+- **String**: `s.length`, `s.substr()`, `s.contains()`, `s.startsWith()`, `s.concat()`
 - **Array**: `[...]` syntax, `arr.length`, `arr[index]`, `arr.first()`, `arr.rest()`, `arr.append()`, `arr.prepend()`, `arr.map()`, `arr.filter()`, `arr.reduce()`
 - **Object**: `{...}` syntax, `obj.property`, `obj[key]`, `obj.keys()`, `obj.merge()`
 - **Math**: `Math.max()`, `Math.min()`, `Math.round()`, `Math.floor()`, `Math.ceil()`, `Math.abs()`

@@ -342,11 +342,18 @@ test defaults to `true` when omitted.
 
 MiniJS code has access to all seval primitives:
 
-### Type Functions
+### Universal Properties
 
-- `type(value)` - Get type name
-- `str(value)` - Convert to string
-- `parse-num(str)` / `parseNum(str)` - Parse string to number
+All values have these properties and methods:
+
+- `value.type` - Get type name as string
+- `value.str()` - Convert to string
+
+### Number
+
+Number parsing:
+
+- `Number.parse(str)` - Parse string to number
 
 ### Math
 
@@ -361,9 +368,13 @@ Math functions are accessed through the `Math` namespace:
 
 ### String
 
-- `strlen(s)`, `substr(s, start, end)`
-- `strContains(s, substr)`, `strStartsWith(s, prefix)`
-- `concat(a, b)`
+String properties and methods:
+
+- `s.length` - String length
+- `s.substr(start, end)` - Get substring
+- `s.contains(substr)` - Check if contains substring
+- `s.startsWith(prefix)` - Check if starts with prefix
+- `s.concat(other)` - Concatenate strings
 
 ### Array
 
