@@ -19,7 +19,7 @@ pnpm add @seval-ui/seval
 ## Quick Start
 
 ```typescript
-import { compileSeval, executeSeval } from '@seval-ui/seval/seval'
+import { compileSeval } from '@seval-ui/seval/seval'
 
 // Compile Seval code
 const code = `{
@@ -30,10 +30,10 @@ const code = `{
 const env = compileSeval(code)
 
 // Execute functions
-const result1 = executeSeval(env, 'double', [5])
+const result1 = env.exec('double', [5])
 console.log(result1) // 10
 
-const result2 = executeSeval(env, 'add', [3, 7])
+const result2 = env.exec('add', [3, 7])
 console.log(result2) // 10
 
 // Extend environment with custom functions
@@ -42,7 +42,7 @@ const extendedEnv = env.bind({
   greet: (name) => `Hello, ${name}!`
 })
 
-const result3 = executeSeval(extendedEnv, 'mul', [5, 6])
+const result3 = extendedEnv.exec('mul', [5, 6])
 console.log(result3) // 30
 
 // Evaluate expressions with nested calls
