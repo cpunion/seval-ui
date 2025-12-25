@@ -282,18 +282,32 @@ many times, and `else` is optional.
 
 ### For Loops
 
-MiniJS supports a compact `for init; test; update { ... }` syntax:
+MiniJS supports two forms of `for` loops:
+
+**Traditional three-part syntax:**
 
 ```javascript
 sum = 0
-for i = 0; i < 5; i = i + 1 {
+for (i = 0; i < 5; i = i + 1) {
   sum = sum + i
 }
 ```
 
-This expands to a recursive loop implementation. All three clauses are optional:
-omit `init` or `update` by leaving the slot empty (`for (; condition; ) { ... }`), and the
-test defaults to `true` when omitted.
+All three clauses are optional: omit `init` or `update` by leaving the slot empty
+(`for (; condition; ) { ... }`), and the test defaults to `true` when omitted.
+
+**Simplified condition-only syntax:**
+
+```javascript
+i = 0
+for (i < 5) {
+  sum = sum + i
+  i = i + 1
+}
+```
+
+This form only specifies the test condition, useful when initialization and update
+are handled separately.
 
 ## Complete Example
 
@@ -338,7 +352,7 @@ test defaults to `true` when omitted.
 | Semicolons     | Optional (newlines separate statements)   | Optional (ASI)             |
 | Object syntax  | Method shorthand + property syntax        | Full object literals       |
 | Classes        | Not supported                             | Supported                  |
-| Loops          | `for (init; test; update)` only           | `for`, `while`, `do`, etc. |
+| Loops          | `for (init; test; update)` and `for test` | `for`, `while`, `do`, etc. |
 | Property access| Dot and bracket notation                  | Same                       |
 | Functions      | Arrow functions and method definitions    | Multiple syntaxes          |
 
