@@ -183,9 +183,21 @@ export class SevalRuntime {
         try {
             // Build environment from current data model
             const dataModel = surface.dataModel as Record<string, Value>;
+
+            // Track if set() was called
+            let setWasCalled = false;
+
             const env: Record<string, Value> = {
                 ...dataModel,
                 context: context as Value,
+                // A2UI helpers for path-based variable binding
+                get: ((path: string) => {
+                    return this.getNestedValue(dataModel, path);
+                }) as unknown as Value,
+                set: ((path: string, value: Value) => {
+                    setWasCalled = true;
+                    this.updateDataModel(surface, path, value);
+                }) as unknown as Value,
             };
 
             // Call the action function using seval
@@ -194,6 +206,11 @@ export class SevalRuntime {
 
             // Apply updates to the data model
             this.applyUpdates(surface, result);
+
+            // If set() was called but no result returned, still increment version
+            if (setWasCalled && !result) {
+                surface.incrementVersion();
+            }
 
             // Auto-call updateDerived after actions to update derived values
             if (actionName !== "updateDerived" && "updateDerived" in this.sevalEnv) {
@@ -214,12 +231,26 @@ export class SevalRuntime {
     /**
      * Apply updates from seval result to data model
      *
-     * Expected format: list of [key, value] pairs
-     * e.g., [["display", "123"], ["operator", "+"]]
+     * Supports two formats:
+     * 1. New format: state object from executeSeval (e.g., {display: "123", operator: "+"})
+     * 2. Legacy format: list of [key, value] pairs (e.g., [["display", "123"], ["operator", "+"]])
      */
     private applyUpdates(surface: IMinimalSurface, result: Value): void {
+        // Handle new format: state object from executeSeval
+        if (result && typeof result === 'object' && !Array.isArray(result)) {
+            for (const [key, value] of Object.entries(result)) {
+                // Skip special keys
+                if (key === 'context' || key === 'get' || key === 'set') {
+                    continue;
+                }
+                this.updateDataModel(surface, key, value as Value);
+            }
+            surface.incrementVersion();
+            return;
+        }
+
+        // Handle legacy format: array of [key, value] pairs
         if (!Array.isArray(result)) {
-            console.warn("[SevalRuntime] Logic result is not a list:", result);
             return;
         }
 
@@ -258,6 +289,27 @@ export class SevalRuntime {
     /**
      * Immutable set helper that understands slash-delimited paths (e.g., "todos/1/done")
      */
+    /**
+     * Get nested value from data model using path
+     */
+    private getNestedValue(data: Record<string, unknown>, path: string): unknown {
+        if (!path.includes("/")) {
+            return data[path];
+        }
+
+        const segments = path.split("/").filter(Boolean);
+        // biome-ignore lint/suspicious/noExplicitAny: dynamic path handling
+        let cursor: any = data;
+
+        for (const seg of segments) {
+            if (cursor == null) return null;
+            const segIndex = Number.isInteger(Number(seg)) ? Number(seg) : seg;
+            cursor = cursor[segIndex];
+        }
+
+        return cursor;
+    }
+
     private setNestedValue(
         data: Record<string, unknown>,
         key: string,
@@ -295,10 +347,10 @@ export class SevalRuntime {
             const nextContainer = Array.isArray(nextVal)
                 ? [...nextVal]
                 : typeof nextVal === "object" && nextVal !== null
-                  ? { ...nextVal }
-                  : Number.isInteger(Number(segments[i + 1]))
-                    ? []
-                    : {};
+                    ? { ...nextVal }
+                    : Number.isInteger(Number(segments[i + 1]))
+                        ? []
+                        : {};
 
             cursor[segIndex] = nextContainer;
             cursor = nextContainer;

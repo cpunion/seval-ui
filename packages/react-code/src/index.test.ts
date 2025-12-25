@@ -21,7 +21,7 @@ function createMockStore(): { store: IMinimalStore; surface: IMinimalSurface } {
         component: {
             Code: {
                 code: `{
-                    action_test() { [["display", "42"]] }
+                    action_test() { set("display", "42") }
                 }`,
                 lang: "seval",
             },
@@ -106,7 +106,7 @@ describe("seval utilities", () => {
 
     it("executeSeval with context", () => {
         const env = compileSeval(`{
-            getAge() { get(context, "age") }
+            getAge() { get("context/age") }
         }`);
 
         const result = executeSeval(env, "getAge", [], { context: { age: 25 } });
