@@ -337,7 +337,7 @@ export class Interpreter {
 	}
 
 	public evaluateProgram(program: Program): Environment {
-		for (const item of program.functions) {
+		for (const item of program.members) {
 			if (item.kind === 'PropertyDef') {
 				// Evaluate property value and store directly
 				const value = this.evaluate(item.value, this.globalEnv)

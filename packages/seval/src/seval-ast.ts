@@ -102,5 +102,5 @@ export interface TernaryExpression {
 
 export interface Program {
 	kind: 'Program'
-	functions: Array<PropertyDef | FunctionDef>
+	members: Array<PropertyDef | FunctionDef>
 }

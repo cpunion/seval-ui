@@ -5,7 +5,7 @@
  * Uses recursive descent parsing with bounded depth.
  */
 
-import type { ASTNode, FunctionDef, Program } from './seval-ast'
+import type { ASTNode, FunctionDef, Program, PropertyDef } from './seval-ast'
 import type { Token } from './seval-tokenizer'
 import { TokenType } from './seval-tokenizer'
 
@@ -50,8 +50,7 @@ export class Parser {
 	public parseProgram(): Program {
 		this.expect(TokenType.LBRACE)
 
-		const functions: Array<import('./seval-ast').PropertyDef | import('./seval-ast').FunctionDef> =
-			[]
+		const members: Array<PropertyDef | FunctionDef> = []
 
 		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
 			const nameToken = this.expect(TokenType.IDENTIFIER)
@@ -63,7 +62,7 @@ export class Parser {
 				this.advance() // consume :
 				const value = this.parseExpression()
 
-				functions.push({
+				members.push({
 					kind: 'PropertyDef',
 					name,
 					value,
@@ -88,7 +87,7 @@ export class Parser {
 
 				this.expect(TokenType.RBRACE)
 
-				functions.push({
+				members.push({
 					kind: 'FunctionDef',
 					name,
 					params,
@@ -107,7 +106,7 @@ export class Parser {
 
 		this.expect(TokenType.RBRACE)
 
-		return { kind: 'Program', functions }
+		return { kind: 'Program', members }
 	}
 
 	// Parse function: name(param1, param2) { body }
