@@ -46,14 +46,61 @@ export class Parser {
 		}
 	}
 
-	// Parse program: { func1(params) { body }, func2(params) { body }, ... }
+	// Parse program: { prop: value, func(params) { body }, ... }
 	public parseProgram(): Program {
 		this.expect(TokenType.LBRACE)
 
 		const functions: FunctionDef[] = []
 
 		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
-			functions.push(this.parseFunction())
+			const nameToken = this.expect(TokenType.IDENTIFIER)
+			const name = nameToken.value
+
+			// Check if it's a property (name: value) or method (name(...) { ... })
+			if (this.peek().type === TokenType.COLON) {
+				// Property definition: name: value
+				this.advance() // consume :
+				const value = this.parseExpression()
+
+				// Store as a zero-parameter function that returns the value
+				functions.push({
+					kind: 'FunctionDef',
+					name,
+					params: [],
+					body: value,
+				})
+			} else if (this.peek().type === TokenType.LPAREN) {
+				// Method definition: name(params) { body }
+				this.advance() // consume (
+				const params: string[] = []
+
+				while (this.peek().type !== TokenType.RPAREN) {
+					const param = this.expect(TokenType.IDENTIFIER)
+					params.push(param.value)
+					if (this.peek().type === TokenType.COMMA) {
+						this.advance()
+					}
+				}
+
+				this.expect(TokenType.RPAREN)
+				this.expect(TokenType.LBRACE)
+
+				const body = this.parseExpression()
+
+				this.expect(TokenType.RBRACE)
+
+				functions.push({
+					kind: 'FunctionDef',
+					name,
+					params,
+					body,
+				})
+			} else {
+				throw new Error(
+					`Expected ':' or '(' after identifier '${name}' at line ${nameToken.line}, column ${nameToken.column}`,
+				)
+			}
+
 			if (this.peek().type === TokenType.COMMA) {
 				this.advance()
 			}
@@ -442,6 +489,33 @@ export class Parser {
 			const expr = this.parseExpression()
 			this.expect(TokenType.RPAREN)
 			return expr
+		}
+
+		if (token.type === TokenType.LBRACE) {
+			// Object literal: { key: value, key2: value2, ... }
+			this.advance() // consume {
+			const properties: Array<{ key: string; value: ASTNode }> = []
+
+			while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
+				const keyToken = this.expect(TokenType.IDENTIFIER)
+				this.expect(TokenType.COLON)
+				const value = this.parseExpression()
+
+				properties.push({
+					key: keyToken.value,
+					value,
+				})
+
+				if (this.peek().type === TokenType.COMMA) {
+					this.advance()
+				}
+			}
+
+			this.expect(TokenType.RBRACE)
+			return {
+				kind: 'ObjectLiteral',
+				properties,
+			}
 		}
 
 		throw new Error(`Unexpected token ${token.type} at line ${token.line}, column ${token.column}`)

@@ -151,6 +151,12 @@ export class Interpreter {
 				return node.value
 
 			case 'Identifier': {
+				// Special handling for 'this'
+				if (node.name === 'this') {
+					// Return the environment as an object so properties can be accessed
+					return env
+				}
+
 				if (node.name in env) {
 					return env[node.name]
 				}
@@ -332,6 +338,7 @@ export class Interpreter {
 
 	public evaluateProgram(program: Program): Environment {
 		for (const func of program.functions) {
+			// Store all as functions (properties are zero-parameter functions)
 			this.evaluate(func, {})
 		}
 		return this.globalEnv

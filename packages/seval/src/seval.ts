@@ -61,7 +61,7 @@ export function executeSeval(
 		}
 	}
 
-	return interpreter.callFunction(functionName, args, context)
+	return interpreter.callFunction(functionName, args, context || env)
 }
 
 // Re-export components for testing
