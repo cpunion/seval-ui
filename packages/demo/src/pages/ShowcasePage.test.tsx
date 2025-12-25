@@ -17,7 +17,7 @@ async function findTextFieldInput(labelText: string, root: ParentNode = document
 }
 
 describe('ShowcasePage', () => {
-	it('renders initial derived state from MiniJS runtime', async () => {
+	it('renders initial derived state from Seval runtime', async () => {
 		const view = renderShowcase()
 		const user = userEvent.setup()
 

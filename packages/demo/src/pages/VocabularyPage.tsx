@@ -2,7 +2,7 @@
  * Vocabulary Page
  *
  * Flashcard-style vocabulary learning with spaced repetition
- * Logic powered by MiniJS
+ * Logic powered by Seval
  */
 
 import { A2UIProvider, createA2UIStore, defaultComponents } from '@seval-ui/react'
@@ -25,7 +25,7 @@ export function VocabularyPage() {
 	return (
 		<div className="vocabulary-page">
 			<h1>Vocabulary Flashcards</h1>
-			<p className="subtitle">Logic powered by MiniJS</p>
+			<p className="subtitle">Logic powered by Seval</p>
 			<div className="vocabulary-container">
 				<A2UIProvider store={store} components={components} />
 			</div>

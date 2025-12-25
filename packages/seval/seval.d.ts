@@ -45,13 +45,6 @@ export class Parser {
 	parseProgram(): Program
 }
 
-export class Interpreter {
-	constructor()
-	evaluate(node: ASTNode, env: Environment): Value
-	evaluateProgram(program: Program): Environment
-	callFunction(name: string, args: Value[], context?: Record<string, Value>): Value
-}
-
 export function compileSeval(source: string): Environment
 export function executeSeval(
 	env: Environment,

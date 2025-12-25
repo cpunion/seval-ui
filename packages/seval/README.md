@@ -1,6 +1,6 @@
 # @seval-ui/seval
 
-> JavaScript-like language that compiles to S-expressions
+> JavaScript-like language with native TypeScript runtime
 
 [![CI](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@seval-ui/seval.svg)](https://www.npmjs.com/package/@seval-ui/seval)
@@ -19,9 +19,9 @@ pnpm add @seval-ui/seval
 ## Quick Start
 
 ```typescript
-import { compileSeval, executeSeval } from '@seval-ui/seval/seval'
+import { compileSeval, executeSeval } from '@seval-ui/seval'
 
-// Compile Seval code
+// Compile Seval code to native JavaScript object
 const code = `{
   double(x) { x * 2 },
   add(a, b) { a + b }
@@ -29,20 +29,38 @@ const code = `{
 
 const env = compileSeval(code)
 
-// Execute functions
-const result1 = executeSeval(env, 'double', [5])
+// Call methods directly on the compiled object
+const result1 = env.double(5)
 console.log(result1) // 10
 
-const result2 = executeSeval(env, 'add', [3, 7])
+const result2 = env.add(3, 7)
 console.log(result2) // 10
+
+// Or use executeSeval for dynamic function calls
+const result3 = executeSeval(env, 'double', [5])
+console.log(result3) // 10
+
+// With state management (this-based access)
+const stateCode = `{
+  count: 0,
+  increment() { this.count = this.count + 1 }
+}`
+const stateEnv = compileSeval(stateCode)
+
+// Execute with state tracking
+const state = { count: 0 }
+executeSeval(stateEnv, 'increment', [], state)
+console.log(state.count) // 1
 ```
 
 ## Features
 
-- **Native TypeScript runtime** – Direct AST interpretation without intermediate compilation
-- **JavaScript-like syntax** – Familiar syntax with arrow functions, objects, if/else
+- **Compiles to native JavaScript** – Uses `new Function()` for zero-overhead execution
+- **JavaScript-like syntax** – Familiar syntax with arrow functions, objects, if/else, for loops
+- **Line comments** – Use `//` for single-line comments
 - **Lightweight** – No external dependencies for runtime evaluation
 - **Type-safe** – Full TypeScript support with type definitions
+- **Sandbox protection** – Blocks access to dangerous reflection properties
 
 ## Syntax Overview
 
@@ -52,30 +70,38 @@ console.log(result2) // 10
   display: "0",
   count: 0,
 
-  // Methods
+  // Methods with implicit return (last expression)
   increment() {
-    count = count + 1
+    this.count = this.count + 1
   },
 
-  // Arrow functions
+  // Single-expression functions
   double(x) { x * 2 },
 
-  // Control flow
+  // Control flow with if/elif/else
   action(value) {
     if value > 0 {
-      display = "positive"
+      this.display = "positive"
     } elif value < 0 {
-      display = "negative"
+      this.display = "negative"
     } else {
-      display = "zero"
+      this.display = "zero"
     }
   },
 
-  // For loops
+  // For loops (three-part form)
   sum() {
-    total = 0
-    for (i = 0; i < 10; i = i + 1) {
-      total = total + i
+    this.total = 0
+    for i = 0; i < 10; i = i + 1 {
+      this.total = this.total + i
+    }
+    this.total  // Returns 45
+  },
+
+  // For loops (condition-only form)
+  countdown() {
+    for this.count > 0 {
+      this.count = this.count - 1
     }
   }
 }
@@ -83,16 +109,18 @@ console.log(result2) // 10
 
 ## Built-in Primitives
 
-The Seval runtime includes these built-in functions:
+The Seval runtime includes these built-in functions and globals:
 
-- **Arithmetic**: `+`, `-`, `*`, `/`, `%`
-- **Comparison**: `=`, `!=`, `<`, `<=`, `>`, `>=`
-- **Logic**: `and`, `or`, `not`
-- **String**: `str`, `parseNum`, `strContains`, `strStartsWith`, `substr`
-- **Array**: `list`, `nth`, `length`, `updateAt`, `append`, `prepend`, `first`, `rest`, `filter`, `map`, `reduce`
-- **Object**: `obj`, `get`, `merge`
-- **Math**: `max`, `min`, `round`, `floor`, `ceil`
-- **Time**: `now`
+- **Arithmetic**: `+`, `-`, `*`, `/`, `%` (+ also handles string concatenation)
+- **Comparison**: `==`, `!=`, `===`, `!==`, `<`, `<=`, `>`, `>=`
+- **Logical**: `&&`, `||`, `!`
+- **Object helpers**: `merge(obj1, obj2, ...)`, `get(obj, key)`
+- **Globals**: `Math`, `Number`, `Date`, `String`, `Array`, `Object`
+
+Native JavaScript methods are accessible on values:
+- **String**: `s.length`, `s.substring()`, `s.includes()`, `s.startsWith()`, `s.concat()`
+- **Array**: `arr.length`, `arr[index]`, `arr.map()`, `arr.filter()`, `arr.concat()`, `arr.push()`
+- **Object**: `obj.property`, `obj[key]`
 
 ## License
 

@@ -183,6 +183,29 @@ export class SevalRuntime {
         try {
             // Build environment from current data model
             const dataModel = surface.dataModel as Record<string, Value>;
+
+            // Track if set() was called
+            let setWasCalled = false;
+
+            // Inject getData/setData helpers into sevalEnv as global functions
+            // Note: We use getData/setData instead of get/set to avoid conflicts
+            // with primitives.get(obj, key) which is used for object property access
+            this.sevalEnv.getData = ((path: string) => {
+                return this.getNestedValue(dataModel, path);
+            }) as unknown as Environment[string];
+
+            this.sevalEnv.setData = ((path: string, value: Value) => {
+                setWasCalled = true;
+                this.updateDataModel(surface, path, value);
+            }) as unknown as Environment[string];
+
+            // Also inject set() for backwards compatibility with existing seval code
+            // that uses set("path", value) for data model updates
+            this.sevalEnv.set = ((path: string, value: Value) => {
+                setWasCalled = true;
+                this.updateDataModel(surface, path, value);
+            }) as unknown as Environment[string];
+
             const env: Record<string, Value> = {
                 ...dataModel,
                 context: context as Value,
@@ -193,7 +216,13 @@ export class SevalRuntime {
             const result = executeSeval(this.sevalEnv, fnName, [], env);
 
             // Apply updates to the data model
-            this.applyUpdates(surface, result);
+            // If set() was used, don't apply result updates (they would overwrite set() changes)
+            if (!setWasCalled) {
+                this.applyUpdates(surface, result);
+            } else if (!result) {
+                // set() was called but no result, increment version
+                surface.incrementVersion();
+            }
 
             // Auto-call updateDerived after actions to update derived values
             if (actionName !== "updateDerived" && "updateDerived" in this.sevalEnv) {
@@ -214,12 +243,26 @@ export class SevalRuntime {
     /**
      * Apply updates from seval result to data model
      *
-     * Expected format: list of [key, value] pairs
-     * e.g., [["display", "123"], ["operator", "+"]]
+     * Supports two formats:
+     * 1. New format: state object from executeSeval (e.g., {display: "123", operator: "+"})
+     * 2. Legacy format: list of [key, value] pairs (e.g., [["display", "123"], ["operator", "+"]])
      */
     private applyUpdates(surface: IMinimalSurface, result: Value): void {
+        // Handle new format: state object from executeSeval
+        if (result && typeof result === "object" && !Array.isArray(result)) {
+            for (const [key, value] of Object.entries(result)) {
+                // Skip special keys
+                if (key === "context" || key === "get" || key === "set") {
+                    continue;
+                }
+                this.updateDataModel(surface, key, value as Value);
+            }
+            surface.incrementVersion();
+            return;
+        }
+
+        // Handle legacy format: array of [key, value] pairs
         if (!Array.isArray(result)) {
-            console.warn("[SevalRuntime] Logic result is not a list:", result);
             return;
         }
 
@@ -258,6 +301,27 @@ export class SevalRuntime {
     /**
      * Immutable set helper that understands slash-delimited paths (e.g., "todos/1/done")
      */
+    /**
+     * Get nested value from data model using path
+     */
+    private getNestedValue(data: Record<string, unknown>, path: string): unknown {
+        if (!path.includes("/")) {
+            return data[path];
+        }
+
+        const segments = path.split("/").filter(Boolean);
+        // biome-ignore lint/suspicious/noExplicitAny: dynamic path handling
+        let cursor: any = data;
+
+        for (const seg of segments) {
+            if (cursor == null) return null;
+            const segIndex = Number.isInteger(Number(seg)) ? Number(seg) : seg;
+            cursor = cursor[segIndex];
+        }
+
+        return cursor;
+    }
+
     private setNestedValue(
         data: Record<string, unknown>,
         key: string,

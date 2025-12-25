@@ -14,6 +14,11 @@ export enum TokenType {
 	// Keywords
 	TRUE = 'TRUE',
 	FALSE = 'FALSE',
+	NULL = 'NULL',
+	IF = 'IF',
+	ELIF = 'ELIF',
+	ELSE = 'ELSE',
+	FOR = 'FOR',
 
 	// Operators
 	PLUS = 'PLUS',
@@ -24,6 +29,8 @@ export enum TokenType {
 
 	EQ = 'EQ', // ==
 	NE = 'NE', // !=
+	STRICT_EQ = 'STRICT_EQ', // ===
+	STRICT_NE = 'STRICT_NE', // !==
 	LT = 'LT', // <
 	LE = 'LE', // <=
 	GT = 'GT', // >
@@ -46,10 +53,12 @@ export enum TokenType {
 	LBRACKET = 'LBRACKET', // [
 	RBRACKET = 'RBRACKET', // ]
 	COMMA = 'COMMA', // ,
+	DOT = 'DOT', // .
+	SEMICOLON = 'SEMICOLON', // ;
+	NEWLINE = 'NEWLINE', // \n
 
 	// Special
 	EOF = 'EOF',
-	NEWLINE = 'NEWLINE',
 }
 
 export interface Token {
@@ -87,8 +96,17 @@ export class Tokenizer {
 	private skipWhitespace(): void {
 		while (this.pos < this.source.length) {
 			const ch = this.peek()
-			if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') {
+			// Skip spaces, tabs, and carriage returns, but NOT newlines
+			if (ch === ' ' || ch === '\t' || ch === '\r') {
 				this.advance()
+			} else if (ch === '/' && this.peek(1) === '/') {
+				// Skip line comments
+				this.advance() // skip first /
+				this.advance() // skip second /
+				while (this.pos < this.source.length && this.peek() !== '\n') {
+					this.advance()
+				}
+				// Don't skip the newline - it will be returned as a token
 			} else {
 				break
 			}
@@ -191,6 +209,11 @@ export class Tokenizer {
 
 		if (value === 'true') type = TokenType.TRUE
 		else if (value === 'false') type = TokenType.FALSE
+		else if (value === 'null') type = TokenType.NULL
+		else if (value === 'if') type = TokenType.IF
+		else if (value === 'elif') type = TokenType.ELIF
+		else if (value === 'else') type = TokenType.ELSE
+		else if (value === 'for') type = TokenType.FOR
 
 		return { type, value, line, column }
 	}
@@ -211,6 +234,12 @@ export class Tokenizer {
 		const line = this.line
 		const column = this.column
 
+		// Handle newlines
+		if (ch === '\n') {
+			this.advance()
+			return { type: TokenType.NEWLINE, value: '\n', line, column }
+		}
+
 		// Numbers
 		if (ch >= '0' && ch <= '9') {
 			return this.readNumber()
@@ -224,6 +253,20 @@ export class Tokenizer {
 		// Identifiers
 		if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_') {
 			return this.readIdentifier()
+		}
+
+		// Three-character operators (must check before two-character)
+		if (ch === '=' && this.peek(1) === '=' && this.peek(2) === '=') {
+			this.advance()
+			this.advance()
+			this.advance()
+			return { type: TokenType.STRICT_EQ, value: '===', line, column }
+		}
+		if (ch === '!' && this.peek(1) === '=' && this.peek(2) === '=') {
+			this.advance()
+			this.advance()
+			this.advance()
+			return { type: TokenType.STRICT_NE, value: '!==', line, column }
 		}
 
 		// Two-character operators
@@ -302,6 +345,10 @@ export class Tokenizer {
 				return { type: TokenType.RBRACKET, value: ch, line, column }
 			case ',':
 				return { type: TokenType.COMMA, value: ch, line, column }
+			case '.':
+				return { type: TokenType.DOT, value: ch, line, column }
+			case ';':
+				return { type: TokenType.SEMICOLON, value: ch, line, column }
 			default:
 				throw new Error(`Unexpected character '${ch}' at line ${line}, column ${column}`)
 		}

@@ -36,7 +36,7 @@ export function CodeRenderer({ id, component, context, store }: CodeRendererProp
         runtimeRef.current = runtime;
 
         // Load code from component props
-        // component is like: { Code: { lang: "minijs", code: "..." } }
+        // component is like: { Code: { lang: "seval", code: "..." } }
         const codeProps = (component as { Code?: { code?: string } }).Code;
         if (codeProps?.code) {
             runtime.loadCode(codeProps.code);

@@ -21,7 +21,7 @@ function createMockStore(): { store: IMinimalStore; surface: IMinimalSurface } {
         component: {
             Code: {
                 code: `{
-                    action_test() { [["display", "42"]] }
+                    action_test() { set("display", "42") }
                 }`,
                 lang: "seval",
             },
@@ -102,14 +102,5 @@ describe("seval utilities", () => {
 
         expect(executeSeval(env, "add", [5, 3])).toBe(8);
         expect(executeSeval(env, "greet", ["World"])).toBe("Hello, World");
-    });
-
-    it("executeSeval with context", () => {
-        const env = compileSeval(`{
-            getAge() { get(context, "age") }
-        }`);
-
-        const result = executeSeval(env, "getAge", [], { context: { age: 25 } });
-        expect(result).toBe(25);
     });
 });

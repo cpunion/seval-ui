@@ -1,7 +1,7 @@
 /**
  * Calculator Page
  *
- * A simple calculator demonstrating MiniJS based logic
+ * A simple calculator demonstrating Seval based logic
  */
 
 import { A2UIProvider, createA2UIStore, defaultComponents } from '@seval-ui/react'
@@ -24,7 +24,7 @@ export function CalculatorPage() {
 	return (
 		<div className="calculator-page">
 			<h1>Calculator</h1>
-			<p className="subtitle">Logic powered by MiniJS</p>
+			<p className="subtitle">Logic powered by Seval</p>
 			<div className="calculator-container">
 				<A2UIProvider store={store} components={components} />
 			</div>

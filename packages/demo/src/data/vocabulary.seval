@@ -1,54 +1,58 @@
 {
-  getWordAt(idx) { nth(words, idx) },
-  getCurrentWord() { nth(words, currentIndex) },
+  getWordAt(idx) { words[idx] },
+  getCurrentWord() { words[currentIndex] },
 
   calcNewEf(oldEf, quality) {
-    max(1.3, min(2.5, oldEf + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
+    Math.max(1.3, Math.min(2.5, oldEf + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
   },
 
   calcNewInterval(oldInterval, easeFactor, reviewCount, quality) {
-    quality == 0 ? 1 : reviewCount == 0 ? 1 : reviewCount == 1 ? 6 : round(oldInterval * easeFactor)
+    quality == 0 ? 1 : reviewCount == 0 ? 1 : reviewCount == 1 ? 6 : Math.round(oldInterval * easeFactor)
   },
 
-  nextWordIndex(currentIdx) { (currentIdx + 1) % length(words) },
+  nextWordIndex(currentIdx) { (currentIdx + 1) % words.length },
 
   action_switchTab() {
-    [["currentTab", get(context, "tab")]]
+    set("currentTab", context.tab)
   },
 
   action_showAnswer() {
-    [["showAnswer", true]]
+    set("showAnswer", true)
   },
 
-  // Simplified: use merge with just the changed fields
   action_reviewWord() {
-    [
-      ["words", updateAt(words, currentIndex, merge(getCurrentWord(), list(
-        list("easeFactor", calcNewEf(get(getCurrentWord(), "easeFactor"), get(context, "quality"))),
-        list("interval", calcNewInterval(get(getCurrentWord(), "interval"), get(getCurrentWord(), "easeFactor"), get(getCurrentWord(), "reviewCount"), get(context, "quality"))),
-        list("status", get(context, "quality") == 0 ? "learning" : "learning"),
-        list("reviewCount", get(getCurrentWord(), "reviewCount") + 1),
-        list("nextReview", now() + 86400000)
-      )))],
-      ["currentIndex", nextWordIndex(currentIndex)],
-      ["showAnswer", false],
-      ["studied", studied + 1],
-      ["remembered", get(context, "quality") > 0 ? remembered + 1 : remembered],
-      ["forgot", get(context, "quality") == 0 ? forgot + 1 : forgot]
-    ]
+    currentWord = getCurrentWord()
+    newWords = Array.from(words)
+    newWords[currentIndex] = {
+      word: currentWord.word,
+      phonetic: currentWord.phonetic,
+      meaning: currentWord.meaning,
+      example: currentWord.example,
+      easeFactor: calcNewEf(currentWord.easeFactor, context.quality),
+      interval: calcNewInterval(currentWord.interval, currentWord.easeFactor, currentWord.reviewCount, context.quality),
+      status: context.quality == 0 ? "learning" : "learning",
+      reviewCount: currentWord.reviewCount + 1,
+      nextReview: Date.now() + 86400000
+    }
+    
+    set("words", newWords)
+    set("currentIndex", nextWordIndex(currentIndex))
+    set("showAnswer", false)
+    set("studied", studied + 1)
+    set("remembered", context.quality > 0 ? remembered + 1 : remembered)
+    set("forgot", context.quality == 0 ? forgot + 1 : forgot)
   },
 
   updateDerived() {
-    [
-      ["currentWord", get(getCurrentWord(), "word")],
-      ["currentPhonetic", get(getCurrentWord(), "phonetic")],
-      ["currentMeaning", get(getCurrentWord(), "meaning")],
-      ["currentExample", get(getCurrentWord(), "example")],
-      ["progressText", "Card " + (currentIndex + 1) + " of " + length(words)],
-      ["studiedText", "Studied: " + studied],
-      ["rememberedText", "Remembered: " + remembered],
-      ["forgotText", "Forgot: " + forgot],
-      ["totalText", "Total words: " + length(words)]
-    ]
+    currentWord = getCurrentWord()
+    set("currentWord", currentWord.word)
+    set("currentPhonetic", currentWord.phonetic)
+    set("currentMeaning", currentWord.meaning)
+    set("currentExample", currentWord.example)
+    set("progressText", "Card " + (currentIndex + 1) + " of " + words.length)
+    set("studiedText", "Studied: " + studied)
+    set("rememberedText", "Remembered: " + remembered)
+    set("forgotText", "Forgot: " + forgot)
+    set("totalText", "Total words: " + words.length)
   }
 }
