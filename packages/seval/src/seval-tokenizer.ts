@@ -15,6 +15,9 @@ export enum TokenType {
 	TRUE = 'TRUE',
 	FALSE = 'FALSE',
 	NULL = 'NULL',
+	IF = 'IF',
+	ELIF = 'ELIF',
+	ELSE = 'ELSE',
 
 	// Operators
 	PLUS = 'PLUS',
@@ -196,6 +199,9 @@ export class Tokenizer {
 		if (value === 'true') type = TokenType.TRUE
 		else if (value === 'false') type = TokenType.FALSE
 		else if (value === 'null') type = TokenType.NULL
+		else if (value === 'if') type = TokenType.IF
+		else if (value === 'elif') type = TokenType.ELIF
+		else if (value === 'else') type = TokenType.ELSE
 
 		return { type, value, line, column }
 	}

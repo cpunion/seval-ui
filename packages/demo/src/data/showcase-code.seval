@@ -1,0 +1,60 @@
+{
+  action_increment() {
+    this.counter = counter + 1
+    this.counterText = "Count: " + (counter + 1)
+  }
+
+  action_decrement() {
+    this.counter = counter - 1
+    this.counterText = "Count: " + (counter - 1)
+  }
+
+  action_reset() {
+    this.counter = 0
+    this.counterText = "Count: 0"
+  }
+
+  action_selectItem() {
+    this.selectedItem = get(context, "name")
+  }
+
+  action_addTodo() {
+    todoInput == ""
+      ? null
+      : (
+          newTodos = append(todos, obj("id", nextTodoId, "text", todoInput, "done", false)),
+          this.todos = newTodos,
+          this.nextTodoId = nextTodoId + 1,
+          this.todoInput = "",
+          this.todoStats = length(filter(newTodos, t => get(t, "done"))) + " of " + length(newTodos) + " completed"
+        )
+  }
+
+  action_deleteTodo() {
+    newTodos = filter(todos, t => get(t, "id") != get(context, "id"))
+    this.todos = newTodos
+    this.todoStats = length(filter(newTodos, t => get(t, "done"))) + " of " + length(newTodos) + " completed"
+  }
+
+  action_submitForm() {
+    formName == "" || formEmail == ""
+      ? (this.formResultText = "Please fill in Name and Email")
+      : (
+          this.formSubmitted = true,
+          this.formResultText = "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)
+        )
+  }
+
+  action_resetForm() {
+    this.formName = ""
+    this.formEmail = ""
+    this.formMessage = ""
+    this.formSubmitted = false
+    this.formResultText = ""
+  }
+
+  updateDerived() {
+    this.checkedText = isChecked ? "Checked!" : "Unchecked"
+    this.todoStats = length(filter(todos, t => get(t, "done"))) + " of " + length(todos) + " completed"
+  }
+}

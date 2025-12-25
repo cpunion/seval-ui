@@ -60,9 +60,7 @@ export const primitives: Record<string, (...args: Value[]) => Value> = {
 
 	// Array functions
 	len: (arr) => (Array.isArray(arr) ? arr.length : 0),
-	length: (arr) => (Array.isArray(arr) ? arr.length : 0), // Alias for len
 	at: (arr, index) => (Array.isArray(arr) ? arr[Number(index)] : null),
-	nth: (arr, index) => (Array.isArray(arr) ? arr[Number(index)] : null), // Alias for at
 	updateAt: (arr, index, value) => {
 		if (!Array.isArray(arr)) return arr
 		const newArr = [...arr]
@@ -70,7 +68,6 @@ export const primitives: Record<string, (...args: Value[]) => Value> = {
 		return newArr
 	},
 	push: (arr, ...values) => (Array.isArray(arr) ? [...arr, ...values] : []),
-	append: (arr, value) => (Array.isArray(arr) ? [...arr, value] : [value]), // Alias for push with single value
 	concat: (...arrays) => {
 		const result: Value[] = []
 		for (const arr of arrays) {
@@ -79,26 +76,6 @@ export const primitives: Record<string, (...args: Value[]) => Value> = {
 			}
 		}
 		return result
-	},
-	includes: (arr, value) => (Array.isArray(arr) ? arr.includes(value) : false),
-	map: (arr, fn) => {
-		if (!Array.isArray(arr)) return []
-		if (typeof fn !== 'function') return arr
-		return arr.map((item) => (fn as (...args: Value[]) => Value)(item))
-	},
-	filter: (arr, fn) => {
-		if (!Array.isArray(arr)) return []
-		if (typeof fn !== 'function') return arr
-		return arr.filter((item) => (fn as (...args: Value[]) => Value)(item))
-	},
-	reduce: (arr, fn, initial?) => {
-		if (!Array.isArray(arr)) return initial ?? null
-		if (typeof fn !== 'function') return initial ?? null
-		const reducer = fn as (...args: Value[]) => Value
-		if (initial !== undefined) {
-			return arr.reduce((acc, item) => reducer(acc, item), initial)
-		}
-		return arr.reduce((acc, item) => reducer(acc, item))
 	},
 
 	// Object functions
