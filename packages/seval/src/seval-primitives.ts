@@ -50,25 +50,7 @@ export const primitives: Record<string, any> = {
 	'||': (a, b) => a || b,
 	'!': (a) => !a,
 
-	// Type conversion
-	str: (v) => String(v),
-	parseNum: (s) => Number.parseFloat(String(s)),
-
-	// Array helpers (immutable operations)
-	updateAt: (arr, index, value) => {
-		if (!Array.isArray(arr)) return arr
-		const newArr = [...arr]
-		newArr[Number(index)] = value
-		return newArr
-	},
-
 	// Object helpers
-	get: (obj, key) => {
-		if (typeof obj === 'object' && obj !== null) {
-			return (obj as ValueObject)[String(key)] ?? null
-		}
-		return null
-	},
 	obj: (...pairs) => {
 		const result: ValueObject = {}
 		for (let i = 0; i < pairs.length; i += 2) {
@@ -92,7 +74,6 @@ export const primitives: Record<string, any> = {
 	Math: Math,
 	Number: Number,
 	Date: Date,
-
-	// Utility
-	now: () => Date.now(),
+	String: String,
+	Array: Array,
 }

@@ -3,51 +3,77 @@ import { type Environment, compileSeval, executeSeval } from './src/seval'
 
 // Full calculator code from calculator.seval
 const CALCULATOR_CODE = `{
-	hasDecimal(s) { str(s).includes(".") },
+	hasDecimal(s) { String(s).includes(".") },
 	negateStr(s) { s == "0" ? "0" : s.startsWith("-") ? s.substring(1) : "-" + s },
-	formatNum(n) { str(Math.round(n * 1000000000) / 1000000000) },
+	formatNum(n) { String(Math.round(n * 1000000000) / 1000000000) },
 	calcOp(op, a, b) {
 		formatNum(
-			op == "+" ? parseNum(a) + parseNum(b) :
-			op == "-" ? parseNum(a) - parseNum(b) :
-			op == "*" ? parseNum(a) * parseNum(b) :
-			op == "/" ? (parseNum(b) == 0 ? 0 : parseNum(a) / parseNum(b)) :
-			parseNum(b)
+			op == "+" ? Number.parseFloat(a) + Number.parseFloat(b) :
+			op == "-" ? Number.parseFloat(a) - Number.parseFloat(b) :
+			op == "*" ? Number.parseFloat(a) * Number.parseFloat(b) :
+			op == "/" ? (Number.parseFloat(b) == 0 ? 0 : Number.parseFloat(a) / Number.parseFloat(b)) :
+			Number.parseFloat(b)
 		)
 	},
 
 	action_digit() {
-		waitingForOperand
-			? [["display", str(get(context, "digit"))], ["waitingForOperand", false]]
-			: [["display", display + str(get(context, "digit"))]]
-	},
+		if (waitingForOperand) {
+			this.display = String(context.digit)
+			this.waitingForOperand = false
+		} else {
+			this.display = display + String(context.digit)
+		}
+	}
 
 	action_decimal() {
-		waitingForOperand
-			? [["display", "0."], ["waitingForOperand", false]]
-			: hasDecimal(display) ? [] : [["display", display + "."]]
-	},
+		if (!hasDecimal(display)) {
+			this.display = display + "."
+		}
+	}
 
 	action_clear() {
-		[["display", "0"], ["memory", "0"], ["operator", ""], ["waitingForOperand", true], ["history", ""]]
-	},
+		this.display = "0"
+		this.memory = "0"
+		this.operator = ""
+		this.waitingForOperand = false
+		this.history = ""
+	}
 
-	action_negate() { [["display", negateStr(display)]] },
+	action_negate() {
+		this.display = negateStr(display)
+	}
 
-	action_percent() { [["display", formatNum(parseNum(display) / 100)]] },
+	action_percent() {
+		this.display = formatNum(Number.parseFloat(display) / 100)
+	}
 
 	action_operator() {
-		operator == ""
-			? [["memory", display], ["operator", get(context, "op")], ["waitingForOperand", true], ["history", display + " " + get(context, "op")]]
-			: [["display", calcOp(operator, memory, display)], ["memory", calcOp(operator, memory, display)], ["operator", get(context, "op")], ["waitingForOperand", true], ["history", calcOp(operator, memory, display) + " " + get(context, "op")]]
-	},
+		if (waitingForOperand) {
+			this.memory = display
+			this.operator = context.op
+			this.waitingForOperand = true
+			this.history = display + " " + context.op
+		} else {
+			result = calcOp(operator, memory, display)
+			this.display = result
+			this.memory = result
+			this.operator = context.op
+			this.waitingForOperand = true
+			this.history = result + " " + context.op
+		}
+	}
 
 	action_equals() {
-		operator == ""
-			? []
-			: [["display", calcOp(operator, memory, display)], ["memory", "0"], ["operator", ""], ["waitingForOperand", true], ["history", history + " " + display + " = " + calcOp(operator, memory, display)]]
+		if (!waitingForOperand) {
+			this.display = calcOp(operator, memory, display)
+			this.memory = "0"
+			this.operator = ""
+			this.waitingForOperand = true
+			this.history = ""
+		}
 	}
 }`
+
 
 describe('Calculator Comprehensive Tests', () => {
 	let env: Environment
@@ -328,14 +354,19 @@ describe('Calculator Comprehensive Tests', () => {
 
 // Additional tests for primitive coverage
 describe('Seval Primitives Coverage', () => {
-	test('updateAt modifies array element', () => {
+	test('array element modification', () => {
 		const code = `{
-            modifyArray(arr, idx, val) { updateAt(arr, idx, val) }
+            modifyArray(arr, idx, val) {
+				newArr = [...arr]
+				newArr[idx] = val
+				newArr
+			}
         }`
 		const env = compileSeval(code)
 		const arr = [1, 2, 3]
 		const result = executeSeval(env, 'modifyArray', [arr, 1, 99])
 		expect(result).toEqual([1, 99, 3])
+		expect(arr).toEqual([1, 2, 3]) // Original unchanged
 	})
 
 	test('obj creates object from key-value pairs', () => {
