@@ -5,7 +5,7 @@ import { type Environment, compileSeval, executeSeval } from './src/seval'
 const CALCULATOR_CODE = `{
 	hasDecimal(s) { str(s).includes(".") },
 	negateStr(s) { s == "0" ? "0" : s.startsWith("-") ? s.substring(1) : "-" + s },
-	formatNum(n) { str(round(n * 1000000000) / 1000000000) },
+	formatNum(n) { str(Math.round(n * 1000000000) / 1000000000) },
 	calcOp(op, a, b) {
 		formatNum(
 			op == "+" ? parseNum(a) + parseNum(b) :
@@ -358,8 +358,8 @@ describe('Seval Primitives Coverage', () => {
 
 	test('floor and ceil math functions', () => {
 		const code = `{
-            testFloor(n) { floor(n) },
-            testCeil(n) { ceil(n) }
+            testFloor(n) { Math.floor(n) },
+            testCeil(n) { Math.ceil(n) }
         }`
 		const env = compileSeval(code)
 		expect(executeSeval(env, 'testFloor', [3.7])).toBe(3)
