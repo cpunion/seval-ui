@@ -69,6 +69,20 @@ export const primitives: Record<string, any> = {
 		}
 		return result
 	},
+	// Get property from object: get(obj, key)
+	get: (obj, key) => {
+		if (obj == null) return null
+		return obj[key] ?? null
+	},
+
+	// Array helpers
+	length: (arr) => (Array.isArray(arr) ? arr.length : 0),
+	append: (arr, item) => (Array.isArray(arr) ? [...arr, item] : [item]),
+	filter: (fn, arr) => (Array.isArray(arr) ? arr.filter(fn) : []),
+	map: (fn, arr) => (Array.isArray(arr) ? arr.map(fn) : []),
+	nth: (arr, idx) => (Array.isArray(arr) ? (arr[idx] ?? null) : null),
+	first: (arr) => (Array.isArray(arr) && arr.length > 0 ? arr[0] : null),
+	last: (arr) => (Array.isArray(arr) && arr.length > 0 ? arr[arr.length - 1] : null),
 
 	// Whitelisted global objects (for sandbox safety)
 	Math: Math,
@@ -76,4 +90,39 @@ export const primitives: Record<string, any> = {
 	Date: Date,
 	String: String,
 	Array: Array,
+	// Note: Object is not included to avoid conflict with obj() primitive
+	// Users can access Object via {}.constructor if needed
+
+	// Internal: Proxy wrappers for sandbox protection
+	// These prevent access to dangerous reflection properties
+	__createObject: (props: Record<string, any>) => {
+		const FORBIDDEN = ['constructor', '__proto__', 'prototype']
+		const obj = Object.assign({}, props)
+		return new Proxy(obj, {
+			get(target, prop) {
+				if (typeof prop === 'string' && FORBIDDEN.includes(prop)) {
+					return undefined
+				}
+				return Reflect.get(target, prop)
+			},
+			has(target, prop) {
+				if (typeof prop === 'string' && FORBIDDEN.includes(prop)) {
+					return false
+				}
+				return Reflect.has(target, prop)
+			},
+		})
+	},
+
+	__createArray: (...items: any[]) => {
+		const FORBIDDEN = ['constructor', '__proto__', 'prototype']
+		return new Proxy([...items], {
+			get(target, prop) {
+				if (typeof prop === 'string' && FORBIDDEN.includes(prop)) {
+					return undefined
+				}
+				return Reflect.get(target, prop)
+			},
+		})
+	},
 }

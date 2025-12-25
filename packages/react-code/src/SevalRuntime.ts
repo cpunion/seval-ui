@@ -187,12 +187,20 @@ export class SevalRuntime {
             // Track if set() was called
             let setWasCalled = false;
 
-            // Inject get/set helpers into sevalEnv as global functions
-            // These will be available in Seval code as get() and set()
-            this.sevalEnv.get = ((path: string) => {
+            // Inject getData/setData helpers into sevalEnv as global functions
+            // Note: We use getData/setData instead of get/set to avoid conflicts
+            // with primitives.get(obj, key) which is used for object property access
+            this.sevalEnv.getData = ((path: string) => {
                 return this.getNestedValue(dataModel, path);
             }) as unknown as Environment[string];
 
+            this.sevalEnv.setData = ((path: string, value: Value) => {
+                setWasCalled = true;
+                this.updateDataModel(surface, path, value);
+            }) as unknown as Environment[string];
+
+            // Also inject set() for backwards compatibility with existing seval code
+            // that uses set("path", value) for data model updates
             this.sevalEnv.set = ((path: string, value: Value) => {
                 setWasCalled = true;
                 this.updateDataModel(surface, path, value);

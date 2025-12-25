@@ -1,16 +1,15 @@
 /**
- * Performance comparison: Interpreter vs Compiler
+ * Performance tests for Seval Compiler
  */
 
 import { describe, expect, test } from 'bun:test'
 import { SevalCompiler } from './src/seval-compiler'
-import { Interpreter } from './src/seval-interpreter'
 import { Parser } from './src/seval-parser'
 import { Tokenizer } from './src/seval-tokenizer'
 
 const ITERATIONS = 10000
 
-describe('Performance: Interpreter vs Compiler', () => {
+describe('Performance: Compiler', () => {
 	const code = `{
 		count: 0,
 		increment() {
@@ -24,34 +23,13 @@ describe('Performance: Interpreter vs Compiler', () => {
 		}
 	}`
 
-	// Parse once for both
+	// Parse once
 	const tokenizer = new Tokenizer(code)
 	const tokens = tokenizer.tokenize()
 	const parser = new Parser(tokens)
 	const program = parser.parseProgram()
 
-	test('Interpreter mode', () => {
-		const start = performance.now()
-
-		for (let i = 0; i < ITERATIONS; i++) {
-			const interpreter = new Interpreter()
-			const env = interpreter.evaluateProgram(program)
-
-			// Call functions
-			interpreter.callFunction('increment', [], env)
-			interpreter.callFunction('add', [5], env)
-			interpreter.callFunction('calculate', [10, 20], env)
-		}
-
-		const end = performance.now()
-		const duration = end - start
-		console.log(`Interpreter: ${duration.toFixed(2)}ms for ${ITERATIONS} iterations`)
-		console.log(`Average: ${(duration / ITERATIONS).toFixed(4)}ms per iteration`)
-
-		expect(duration).toBeGreaterThan(0)
-	})
-
-	test('Compiler mode', () => {
+	test('Compile and execute', () => {
 		const start = performance.now()
 
 		for (let i = 0; i < ITERATIONS; i++) {
@@ -72,7 +50,7 @@ describe('Performance: Interpreter vs Compiler', () => {
 		expect(duration).toBeGreaterThan(0)
 	})
 
-	test('Compiler mode (compiled once, executed many times)', () => {
+	test('Compile once, execute many times', () => {
 		const compiler = new SevalCompiler()
 		const obj = compiler.compile(program)
 
@@ -114,33 +92,22 @@ describe('Performance: Interpreter vs Compiler', () => {
 		const parser = new Parser(tokens)
 		const program = parser.parseProgram()
 
-		const CALC_ITERATIONS = 1000
+		const CALC_ITERATIONS = 10000
 
-		// Interpreter
-		const interpreterStart = performance.now()
-		const interpreter = new Interpreter()
-		const env = interpreter.evaluateProgram(program)
-		for (let i = 0; i < CALC_ITERATIONS; i++) {
-			interpreter.callFunction('calculate', [10], env)
-		}
-		const interpreterEnd = performance.now()
-		const interpreterDuration = interpreterEnd - interpreterStart
-
-		// Compiler
-		const compilerStart = performance.now()
 		const compiler = new SevalCompiler()
 		const obj = compiler.compile(program)
+
+		const start = performance.now()
 		for (let i = 0; i < CALC_ITERATIONS; i++) {
 			obj.calculate(10)
 		}
-		const compilerEnd = performance.now()
-		const compilerDuration = compilerEnd - compilerStart
+		const end = performance.now()
+		const duration = end - start
 
 		console.log(`\nComplex calculation (${CALC_ITERATIONS} iterations):`)
-		console.log(`Interpreter: ${interpreterDuration.toFixed(2)}ms`)
-		console.log(`Compiler: ${compilerDuration.toFixed(2)}ms`)
-		console.log(`Speedup: ${(interpreterDuration / compilerDuration).toFixed(2)}x`)
+		console.log(`Duration: ${duration.toFixed(2)}ms`)
+		console.log(`Average: ${(duration / CALC_ITERATIONS).toFixed(4)}ms per iteration`)
 
-		expect(compilerDuration).toBeLessThan(interpreterDuration)
+		expect(duration).toBeGreaterThan(0)
 	})
 })

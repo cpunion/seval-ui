@@ -74,7 +74,9 @@ export function executeSeval(
 // Re-export components for testing
 export { Tokenizer } from './seval-tokenizer'
 export { Parser } from './seval-parser'
-export { Interpreter } from './seval-interpreter'
 export type { Token, TokenType } from './seval-tokenizer'
 export type { ASTNode, Program } from './seval-ast'
-export type { Value, Environment, SFunction } from './seval-interpreter'
+export type { Value, PrimitiveValue, ValueArray, ValueObject, SFunction } from './seval-primitives'
+
+// Environment type for compiled seval code
+export type Environment = Record<string, unknown>
