@@ -6,7 +6,7 @@
  */
 
 import type { ASTNode, Program } from './seval-ast'
-import { primitives, type Value, type ValueObject, type SFunction } from './seval-primitives'
+import { type SFunction, type Value, type ValueObject, primitives } from './seval-primitives'
 
 // Re-export types for backward compatibility
 export type { Value, PrimitiveValue, ValueArray, ValueObject, SFunction } from './seval-primitives'
@@ -15,10 +15,6 @@ export type Environment = Record<string, Value>
 
 export class Interpreter {
 	private globalEnv: Environment = {}
-
-	constructor() {
-		// Primitives are now imported from seval-primitives
-	}
 
 	public evaluate(node: ASTNode, env: Environment): Value {
 		switch (node.kind) {

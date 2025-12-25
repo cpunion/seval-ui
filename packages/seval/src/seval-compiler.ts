@@ -12,7 +12,9 @@ export class SevalCompiler {
 	/**
 	 * Compile a Seval program to a native JavaScript object
 	 */
+	// biome-ignore lint/suspicious/noExplicitAny: Compiler returns dynamic JS objects
 	public compile(program: Program): any {
+		// biome-ignore lint/suspicious/noExplicitAny: Dynamic object construction
 		const obj: any = {}
 
 		for (const member of program.members) {
@@ -31,6 +33,7 @@ export class SevalCompiler {
 	/**
 	 * Compile a literal value (numbers, strings, arrays, objects)
 	 */
+	// biome-ignore lint/suspicious/noExplicitAny: Returns various JS types
 	private compileValue(node: ASTNode): any {
 		switch (node.kind) {
 			case 'NumberLiteral':
@@ -46,6 +49,7 @@ export class SevalCompiler {
 				return node.elements.map((el) => this.compileValue(el))
 
 			case 'ObjectLiteral': {
+				// biome-ignore lint/suspicious/noExplicitAny: Dynamic object
 				const obj: any = {}
 				for (const prop of node.properties) {
 					obj[prop.key] = this.compileValue(prop.value)
@@ -54,6 +58,7 @@ export class SevalCompiler {
 			}
 
 			default:
+				// biome-ignore lint/suspicious/noExplicitAny: Fallback error
 				throw new Error(`Cannot compile value of kind: ${(node as any).kind}`)
 		}
 	}
@@ -61,6 +66,7 @@ export class SevalCompiler {
 	/**
 	 * Compile a function to a native JavaScript function
 	 */
+	// biome-ignore lint/complexity/noBannedTypes: Need to return native Function
 	private compileFunction(func: FunctionDef): Function {
 		// Compile function body to JS expression string
 		const bodyCode = this.compileExpression(func.body)
@@ -104,10 +110,9 @@ export class SevalCompiler {
 					// Bracket notation: obj[key]
 					const property = this.compileExpression(node.property as ASTNode)
 					return `${object}[${property}]`
-				} else {
-					// Dot notation: obj.prop
-					return `${object}.${node.property}`
 				}
+				// Dot notation: obj.prop
+				return `${object}.${node.property}`
 			}
 
 			case 'BinaryExpression': {
@@ -159,6 +164,7 @@ export class SevalCompiler {
 			}
 
 			default:
+				// biome-ignore lint/suspicious/noExplicitAny: Fallback error
 				throw new Error(`Cannot compile expression of kind: ${(node as any).kind}`)
 		}
 	}

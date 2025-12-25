@@ -15,6 +15,7 @@ export interface ValueObject extends Record<string, Value> {}
 export interface SFunction {
 	kind: 'function'
 	params: string[]
+	// biome-ignore lint/suspicious/noExplicitAny: ASTNode type would create circular dependency
 	body: any // ASTNode
 	closure: Record<string, Value>
 }
