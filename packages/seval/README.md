@@ -35,6 +35,15 @@ console.log(result1) // 10
 
 const result2 = executeSeval(env, 'add', [3, 7])
 console.log(result2) // 10
+
+// Extend environment with custom functions
+const extendedEnv = env.bind({
+  mul: (a, b) => a * b,
+  greet: (name) => `Hello, ${name}!`
+})
+
+const result3 = executeSeval(extendedEnv, 'mul', [5, 6])
+console.log(result3) // 30
 ```
 
 ## Features
