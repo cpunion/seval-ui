@@ -38,5 +38,11 @@ jobs:
       - name: Build packages
         run: pnpm -r run build
 
-      - name: Run tests
-        run: pnpm -r run test
+      - name: Run tests with coverage
+        run: pnpm -r run coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
