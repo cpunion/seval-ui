@@ -6,6 +6,7 @@ export type ASTNode =
 	| NumberLiteral
 	| StringLiteral
 	| BooleanLiteral
+	| NullLiteral
 	| Identifier
 	| BinaryExpression
 	| UnaryExpression
@@ -33,6 +34,11 @@ export interface StringLiteral {
 export interface BooleanLiteral {
 	kind: 'BooleanLiteral'
 	value: boolean
+}
+
+export interface NullLiteral {
+	kind: 'NullLiteral'
+	value: null
 }
 
 export interface Identifier {

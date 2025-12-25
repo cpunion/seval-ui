@@ -165,8 +165,8 @@ export class Parser {
 
 		const statements: ASTNode[] = []
 
-		// Skip leading newlines
-		while (this.peek().type === TokenType.NEWLINE) {
+		// Skip leading newlines and semicolons
+		while (this.peek().type === TokenType.NEWLINE || this.peek().type === TokenType.SEMICOLON) {
 			this.advance()
 		}
 
@@ -174,8 +174,8 @@ export class Parser {
 			// Parse statement/expression
 			statements.push(this.parseAssignment())
 
-			// Skip newlines after statement
-			while (this.peek().type === TokenType.NEWLINE) {
+			// Skip newlines and semicolons after statement
+			while (this.peek().type === TokenType.NEWLINE || this.peek().type === TokenType.SEMICOLON) {
 				this.advance()
 			}
 
@@ -185,7 +185,7 @@ export class Parser {
 			}
 
 			// If not closing brace and not EOF, there must be another statement
-			// (newlines were already skipped above)
+			// (newlines and semicolons were already skipped above)
 		}
 
 		this.expect(TokenType.RBRACE)
@@ -491,6 +491,14 @@ export class Parser {
 			return {
 				kind: 'BooleanLiteral',
 				value: false,
+			}
+		}
+
+		if (token.type === TokenType.NULL) {
+			this.advance()
+			return {
+				kind: 'NullLiteral',
+				value: null,
 			}
 		}
 

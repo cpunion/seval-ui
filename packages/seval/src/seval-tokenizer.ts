@@ -14,6 +14,7 @@ export enum TokenType {
 	// Keywords
 	TRUE = 'TRUE',
 	FALSE = 'FALSE',
+	NULL = 'NULL',
 
 	// Operators
 	PLUS = 'PLUS',
@@ -47,6 +48,7 @@ export enum TokenType {
 	RBRACKET = 'RBRACKET', // ]
 	COMMA = 'COMMA', // ,
 	DOT = 'DOT', // .
+	SEMICOLON = 'SEMICOLON', // ;
 	NEWLINE = 'NEWLINE', // \n
 
 	// Special
@@ -193,6 +195,7 @@ export class Tokenizer {
 
 		if (value === 'true') type = TokenType.TRUE
 		else if (value === 'false') type = TokenType.FALSE
+		else if (value === 'null') type = TokenType.NULL
 
 		return { type, value, line, column }
 	}
@@ -312,6 +315,8 @@ export class Tokenizer {
 				return { type: TokenType.COMMA, value: ch, line, column }
 			case '.':
 				return { type: TokenType.DOT, value: ch, line, column }
+			case ';':
+				return { type: TokenType.SEMICOLON, value: ch, line, column }
 			default:
 				throw new Error(`Unexpected character '${ch}' at line ${line}, column ${column}`)
 		}

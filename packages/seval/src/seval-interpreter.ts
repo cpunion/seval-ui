@@ -27,6 +27,9 @@ export class Interpreter {
 			case 'BooleanLiteral':
 				return node.value
 
+			case 'NullLiteral':
+				return null
+
 			case 'Identifier': {
 				// Special handling for 'this'
 				if (node.name === 'this') {
@@ -122,7 +125,7 @@ export class Interpreter {
 						propName = node.target.property as string
 					}
 					// Set property
-					; (object as ValueObject)[propName] = value
+					;(object as ValueObject)[propName] = value
 				}
 
 				// Assignment returns the assigned value

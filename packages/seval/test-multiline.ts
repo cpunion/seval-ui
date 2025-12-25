@@ -12,8 +12,8 @@ const code = `{
 
 console.log('Testing multi-line ternary in function call')
 try {
-    const env = compileSeval(code)
-    console.log('Success! env:', Object.keys(env))
+	const env = compileSeval(code)
+	console.log('Success! env:', Object.keys(env))
 } catch (e) {
-    console.error('Error:', (e as Error).message)
+	console.error('Error:', (e as Error).message)
 }
