@@ -31,13 +31,12 @@ export function compileSeval(source: string): Record<string, unknown> {
 }
 
 /**
- * Execute a Seval function from compiled object
- *
- * @param env Native JS object from compileSeval
- * @param functionName Name of function to call
- * @param args Arguments array
- * @param state Optional state object (merged into env for this-based access)
- * @returns Return value
+ * Execute a function from compiled environment
+ * @param env Compiled environment
+ * @param functionName Function name to execute
+ * @param args Arguments to pass
+ * @param state Optional state object for this-based access
+ * @returns Return value (or updated state if state was provided)
  */
 export function executeSeval(
 	env: Record<string, unknown>,
@@ -51,11 +50,25 @@ export function executeSeval(
 		throw new Error(`Function '${functionName}' not found or not a function`)
 	}
 
-	// Merge state into env for this-based access
-	const context = state ? { ...env, ...state } : env
+	// If state is provided, use it as context and return updated state
+	if (state) {
+		const context = { ...env, ...state }
+		const result = func.apply(context, args)
 
-	// Call the function with merged context as 'this'
-	return func.apply(context, args)
+		// Extract updated state properties (exclude env properties)
+		const updatedState: Record<string, unknown> = {}
+		for (const key in context) {
+			if (!(key in env) || state[key] !== context[key]) {
+				updatedState[key] = context[key]
+			}
+		}
+
+		// Return updated state for testing, or result if no state changes
+		return Object.keys(updatedState).length > 0 ? updatedState : result
+	}
+
+	// No state: just call the function
+	return func.apply(env, args)
 }
 
 // Re-export components for testing
