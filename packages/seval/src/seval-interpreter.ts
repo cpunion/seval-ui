@@ -6,137 +6,18 @@
  */
 
 import type { ASTNode, Program } from './seval-ast'
+import { primitives, type Value, type ValueObject, type SFunction } from './seval-primitives'
 
-// Runtime value types
-export type PrimitiveValue = number | string | boolean | null
-export type Value = PrimitiveValue | ValueArray | ValueObject | SFunction
-
-export interface ValueArray extends Array<Value> {}
-export interface ValueObject extends Record<string, Value> {}
-
-export interface SFunction {
-	kind: 'function'
-	params: string[]
-	body: ASTNode
-	closure: Environment
-}
+// Re-export types for backward compatibility
+export type { Value, PrimitiveValue, ValueArray, ValueObject, SFunction } from './seval-primitives'
 
 export type Environment = Record<string, Value>
 
 export class Interpreter {
-	private primitives: Record<string, (...args: Value[]) => Value>
 	private globalEnv: Environment = {}
 
 	constructor() {
-		this.primitives = this.createPrimitives()
-	}
-
-	private createPrimitives(): Record<string, (...args: Value[]) => Value> {
-		return {
-			// Arithmetic (+ also handles string concatenation)
-			'+': (a, b) => {
-				if (typeof a === 'string' || typeof b === 'string') {
-					return String(a) + String(b)
-				}
-				return (a as number) + (b as number)
-			},
-			'-': (a, b) => (a as number) - (b as number),
-			'*': (...args) => args.reduce((a, b) => (a as number) * (b as number), 1) as number,
-			'/': (a, b) => (a as number) / (b as number),
-			'%': (a, b) => (a as number) % (b as number),
-
-			// Comparison
-			'=': (a, b) => a === b,
-			'!=': (a, b) => a !== b,
-			'<': (a, b) => (a as number) < (b as number),
-			'<=': (a, b) => (a as number) <= (b as number),
-			'>': (a, b) => (a as number) > (b as number),
-			'>=': (a, b) => (a as number) >= (b as number),
-
-			// Logic
-			and: (...args) => args.every((v) => v),
-			or: (...args) => args.some((v) => v),
-			not: (a) => !a,
-
-			// String
-			str: (a) => String(a),
-			parseNum: (s) => Number.parseFloat(String(s)),
-			strContains: (s, sub) => String(s).includes(String(sub)),
-			strStartsWith: (s, prefix) => String(s).startsWith(String(prefix)),
-			substr: (s, start, len?) => {
-				const str = String(s)
-				const startIdx = start as number
-				return len !== undefined
-					? str.substring(startIdx, startIdx + (len as number))
-					: str.substring(startIdx)
-			},
-
-			// Array
-			list: (...args) => args,
-			nth: (arr, idx) => (arr as Value[])[idx as number],
-			length: (arr) => (arr as Value[]).length,
-			updateAt: (arr, idx, val) => {
-				const newArr = [...(arr as Value[])]
-				newArr[idx as number] = val
-				return newArr
-			},
-			append: (arr, val) => [...(arr as Value[]), val],
-			prepend: (val, arr) => [val, ...(arr as Value[])],
-			first: (arr) => (arr as Value[])[0],
-			rest: (arr) => (arr as Value[]).slice(1),
-			filter: (fn, arr) => {
-				const sFunc = fn as SFunction
-				const arrVal = arr as Value[]
-				return arrVal.filter((item) => {
-					const funcEnv: Environment = { ...sFunc.closure }
-					if (sFunc.params[0]) funcEnv[sFunc.params[0]] = item
-					return this.evaluate(sFunc.body, funcEnv) as boolean
-				})
-			},
-			map: (fn, arr) => {
-				const sFunc = fn as SFunction
-				const arrVal = arr as Value[]
-				return arrVal.map((item) => {
-					const funcEnv: Environment = { ...sFunc.closure }
-					if (sFunc.params[0]) funcEnv[sFunc.params[0]] = item
-					return this.evaluate(sFunc.body, funcEnv)
-				})
-			},
-			reduce: (fn, init, arr) => {
-				const sFunc = fn as SFunction
-				const arrVal = arr as Value[]
-				return arrVal.reduce((acc, item) => {
-					const funcEnv: Environment = { ...sFunc.closure }
-					if (sFunc.params[0]) funcEnv[sFunc.params[0]] = acc
-					if (sFunc.params[1]) funcEnv[sFunc.params[1]] = item
-					return this.evaluate(sFunc.body, funcEnv)
-				}, init)
-			},
-
-			// Object
-			obj: (...args) => {
-				const obj: Record<string, Value> = {}
-				for (let i = 0; i < args.length; i += 2) {
-					obj[args[i] as string] = args[i + 1]
-				}
-				return obj
-			},
-			get: (obj, key) => (obj as Record<string, Value>)[key as string],
-			merge: (obj1, obj2) => ({
-				...(obj1 as Record<string, Value>),
-				...(obj2 as Record<string, Value>),
-			}),
-
-			// Math
-			max: (...args) => Math.max(...(args as number[])),
-			min: (...args) => Math.min(...(args as number[])),
-			round: (a) => Math.round(a as number),
-			floor: (a) => Math.floor(a as number),
-			ceil: (a) => Math.ceil(a as number),
-
-			// Time
-			now: () => Date.now(),
-		}
+		// Primitives are now imported from seval-primitives
 	}
 
 	public evaluate(node: ASTNode, env: Environment): Value {
@@ -261,9 +142,9 @@ export class Interpreter {
 					callee = node.callee.name
 
 					// Check for primitive
-					if (callee in this.primitives) {
+					if (callee in primitives) {
 						const args = node.args.map((arg) => this.evaluate(arg, env))
-						return this.primitives[callee]?.(...args)
+						return primitives[callee]?.(...args)
 					}
 
 					// Check for user function
@@ -339,7 +220,7 @@ export class Interpreter {
 				const left = this.evaluate(node.left, env)
 				const right = this.evaluate(node.right, env)
 
-				return this.primitives[op]?.(left, right)
+				return primitives[op]?.(left, right)
 			}
 
 			case 'UnaryExpression': {
@@ -355,7 +236,7 @@ export class Interpreter {
 				if (op === '-') {
 					return -(operand as number)
 				}
-				return this.primitives[op]?.(operand)
+				return primitives[op]?.(operand)
 			}
 
 			case 'TernaryExpression': {
