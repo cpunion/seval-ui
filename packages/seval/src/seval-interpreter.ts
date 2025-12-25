@@ -171,6 +171,35 @@ export class Interpreter {
 				return obj
 			}
 
+			case 'MemberExpression': {
+				const object = this.evaluate(node.object, env)
+
+				// Handle null/undefined
+				if (object === null || object === undefined) {
+					throw new Error('Cannot access property of null or undefined')
+				}
+
+				// Get property name
+				let propertyName: string
+				if (node.computed) {
+					// Bracket notation: arr[0] or obj[key]
+					const prop = this.evaluate(node.property as ASTNode, env)
+					propertyName = String(prop)
+				} else {
+					// Dot notation: obj.property
+					propertyName = node.property as string
+				}
+
+				// Access property
+				if (typeof object === 'object' && object !== null) {
+					return (object as ValueObject)[propertyName] ?? null
+				}
+
+				// For primitive values, return null for now
+				// (will add universal properties later)
+				return null
+			}
+
 			case 'CallExpression': {
 				// Handle arrow function or identifier callee
 				let sFunc: SFunction | undefined

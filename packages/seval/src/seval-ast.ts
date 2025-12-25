@@ -12,6 +12,7 @@ export type ASTNode =
 	| FunctionDef
 	| ArrowFunction
 	| CallExpression
+	| MemberExpression
 	| BinaryExpression
 	| UnaryExpression
 	| TernaryExpression
@@ -57,6 +58,13 @@ export interface CallExpression {
 	kind: 'CallExpression'
 	callee: ASTNode // Can be Identifier or ArrowFunction
 	args: ASTNode[]
+}
+
+export interface MemberExpression {
+	kind: 'MemberExpression'
+	object: ASTNode
+	property: string | ASTNode // string for dot notation, ASTNode for bracket notation
+	computed: boolean // true for arr[0], false for obj.prop
 }
 
 export interface ArrowFunction {

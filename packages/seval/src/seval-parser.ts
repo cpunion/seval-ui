@@ -256,7 +256,7 @@ export class Parser {
 		return this.parsePostfix()
 	}
 
-	// Parse postfix: primary(...), primary[...]
+	// Parse postfix: primary(...), primary[...], primary.prop
 	private parsePostfix(): ASTNode {
 		let expr = this.parsePrimary()
 
@@ -275,14 +275,31 @@ export class Parser {
 
 				this.expect(TokenType.RPAREN)
 
-				if (expr.kind !== 'Identifier') {
-					throw new Error('Only identifiers can be called as functions')
-				}
-
 				expr = {
 					kind: 'CallExpression',
 					callee: expr,
 					args,
+				}
+			} else if (this.peek().type === TokenType.DOT) {
+				// Dot notation: obj.property
+				this.advance() // consume .
+				const propertyToken = this.expect(TokenType.IDENTIFIER)
+				expr = {
+					kind: 'MemberExpression',
+					object: expr,
+					property: propertyToken.value,
+					computed: false,
+				}
+			} else if (this.peek().type === TokenType.LBRACKET) {
+				// Bracket notation: arr[index] or obj["key"]
+				this.advance() // consume [
+				const property = this.parseExpression()
+				this.expect(TokenType.RBRACKET)
+				expr = {
+					kind: 'MemberExpression',
+					object: expr,
+					property,
+					computed: true,
 				}
 			} else {
 				break

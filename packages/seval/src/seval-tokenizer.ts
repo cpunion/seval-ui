@@ -46,6 +46,7 @@ export enum TokenType {
 	LBRACKET = 'LBRACKET', // [
 	RBRACKET = 'RBRACKET', // ]
 	COMMA = 'COMMA', // ,
+	DOT = 'DOT', // .
 
 	// Special
 	EOF = 'EOF',
@@ -302,6 +303,8 @@ export class Tokenizer {
 				return { type: TokenType.RBRACKET, value: ch, line, column }
 			case ',':
 				return { type: TokenType.COMMA, value: ch, line, column }
+			case '.':
+				return { type: TokenType.DOT, value: ch, line, column }
 			default:
 				throw new Error(`Unexpected character '${ch}' at line ${line}, column ${column}`)
 		}
