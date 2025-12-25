@@ -187,17 +187,20 @@ export class SevalRuntime {
             // Track if set() was called
             let setWasCalled = false;
 
+            // Inject get/set helpers into sevalEnv as global functions
+            // These will be available in Seval code as get() and set()
+            this.sevalEnv.get = ((path: string) => {
+                return this.getNestedValue(dataModel, path);
+            }) as unknown as Environment[string];
+
+            this.sevalEnv.set = ((path: string, value: Value) => {
+                setWasCalled = true;
+                this.updateDataModel(surface, path, value);
+            }) as unknown as Environment[string];
+
             const env: Record<string, Value> = {
                 ...dataModel,
                 context: context as Value,
-                // A2UI helpers for path-based variable binding
-                get: ((path: string) => {
-                    return this.getNestedValue(dataModel, path);
-                }) as unknown as Value,
-                set: ((path: string, value: Value) => {
-                    setWasCalled = true;
-                    this.updateDataModel(surface, path, value);
-                }) as unknown as Value,
             };
 
             // Call the action function using seval
@@ -205,10 +208,11 @@ export class SevalRuntime {
             const result = executeSeval(this.sevalEnv, fnName, [], env);
 
             // Apply updates to the data model
-            this.applyUpdates(surface, result);
-
-            // If set() was called but no result returned, still increment version
-            if (setWasCalled && !result) {
+            // If set() was used, don't apply result updates (they would overwrite set() changes)
+            if (!setWasCalled) {
+                this.applyUpdates(surface, result);
+            } else if (!result) {
+                // set() was called but no result, increment version
                 surface.incrementVersion();
             }
 
@@ -237,10 +241,10 @@ export class SevalRuntime {
      */
     private applyUpdates(surface: IMinimalSurface, result: Value): void {
         // Handle new format: state object from executeSeval
-        if (result && typeof result === 'object' && !Array.isArray(result)) {
+        if (result && typeof result === "object" && !Array.isArray(result)) {
             for (const [key, value] of Object.entries(result)) {
                 // Skip special keys
-                if (key === 'context' || key === 'get' || key === 'set') {
+                if (key === "context" || key === "get" || key === "set") {
                     continue;
                 }
                 this.updateDataModel(surface, key, value as Value);
@@ -347,10 +351,10 @@ export class SevalRuntime {
             const nextContainer = Array.isArray(nextVal)
                 ? [...nextVal]
                 : typeof nextVal === "object" && nextVal !== null
-                    ? { ...nextVal }
-                    : Number.isInteger(Number(segments[i + 1]))
-                        ? []
-                        : {};
+                  ? { ...nextVal }
+                  : Number.isInteger(Number(segments[i + 1]))
+                    ? []
+                    : {};
 
             cursor[segIndex] = nextContainer;
             cursor = nextContainer;
