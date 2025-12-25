@@ -2,20 +2,22 @@
  * Seval - TypeScript Implementation
  *
  * Complete TypeScript implementation of Seval language.
- * Parser + Interpreter, no code generation needed.
+ * Compiles to native JavaScript objects for zero-overhead execution.
  */
 
-import { type Environment, Interpreter, type Value } from './seval-interpreter'
+import { SevalCompiler } from './seval-compiler'
+import type { Value } from './seval-primitives'
 import { Parser } from './seval-parser'
 import { Tokenizer } from './seval-tokenizer'
 
 /**
- * Compile and execute Seval code
+ * Compile Seval code to native JavaScript object
  *
  * @param source Seval source code
- * @returns Runtime environment with all defined functions
+ * @returns Native JS object with properties and methods
  */
-export function compileSeval(source: string): Environment {
+// biome-ignore lint/suspicious/noExplicitAny: Returns dynamic native JS object
+export function compileSeval(source: string): any {
 	// Tokenize
 	const tokenizer = new Tokenizer(source)
 	const tokens = tokenizer.tokenize()
@@ -24,44 +26,33 @@ export function compileSeval(source: string): Environment {
 	const parser = new Parser(tokens)
 	const program = parser.parseProgram()
 
-	// Interpret
-	const interpreter = new Interpreter()
-	return interpreter.evaluateProgram(program)
+	// Compile to native JS object
+	const compiler = new SevalCompiler()
+	return compiler.compile(program)
 }
 
 /**
- * Execute a Seval function from already-compiled environment
+ * Execute a Seval function from compiled object
  *
- * @param env Runtime environment from compileSeval
+ * @param env Native JS object from compileSeval
  * @param functionName Name of function to call
  * @param args Arguments array
- * @param context Optional context object (e.g., for actions)
+ * @param state Optional state object (merged into env for this-based access)
  * @returns Return value
  */
-export function executeSeval(
-	env: Environment,
-	functionName: string,
-	args: Value[] = [],
-	context?: Record<string, Value>,
-): Value {
-	// Create new interpreter with the compiled environment
-	const interpreter = new Interpreter()
+// biome-ignore lint/suspicious/noExplicitAny: Works with dynamic JS objects
+export function executeSeval(env: any, functionName: string, args: any[] = [], state?: any): any {
+	const func = env[functionName]
 
-	// Load all functions from environment
-	for (const [name, value] of Object.entries(env)) {
-		// biome-ignore lint/suspicious/noExplicitAny: Accessing private globalEnv
-		;(interpreter as any).globalEnv[name] = value
+	if (typeof func !== 'function') {
+		throw new Error(`Function '${functionName}' not found or not a function`)
 	}
 
-	// Load context (data model) into globalEnv so helper functions can access it
-	if (context) {
-		for (const [name, value] of Object.entries(context)) {
-			// biome-ignore lint/suspicious/noExplicitAny: Accessing private globalEnv
-			;(interpreter as any).globalEnv[name] = value
-		}
-	}
+	// Merge state into env for this-based access
+	const context = state ? { ...env, ...state } : env
 
-	return interpreter.callFunction(functionName, args, context || env)
+	// Call the function with merged context as 'this'
+	return func.apply(context, args)
 }
 
 // Re-export components for testing

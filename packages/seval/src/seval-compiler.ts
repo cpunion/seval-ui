@@ -69,24 +69,30 @@ export class SevalCompiler {
 	// biome-ignore lint/complexity/noBannedTypes: Need to return native Function
 	private compileFunction(func: FunctionDef): Function {
 		// Compile function body to JS expression string
-		const bodyCode = this.compileExpression(func.body)
+		const bodyCode = this.compileExpression(func.body, func.params)
 
 		// Create native JS function with proper this binding
-		// Note: Using new Function() instead of eval for better security
+		// The function signature is: function(...userParams, primitives)
+		// When called, we need to append primitives as the last argument
 		const funcCode = `return ${bodyCode}`
 
 		try {
-			// Create function with primitives in scope
-			return new Function(...func.params, 'primitives', funcCode).bind(null, primitives)
+			// Create function: function(param1, param2, ..., primitives) { return ... }
+			const compiledFunc = new Function(...func.params, 'primitives', funcCode)
+
+			// Wrap to inject primitives
+			return function (this: any, ...args: any[]) {
+				return compiledFunc.apply(this, [...args, primitives])
+			}
 		} catch (error) {
 			throw new Error(`Failed to compile function ${func.name}: ${error}`)
 		}
 	}
-
 	/**
 	 * Compile an expression to JavaScript code string
+	 * @param params Function parameters (for scope checking)
 	 */
-	private compileExpression(node: ASTNode): string {
+	private compileExpression(node: ASTNode, params: string[] = []): string {
 		switch (node.kind) {
 			case 'NumberLiteral':
 				return String(node.value)
@@ -98,17 +104,26 @@ export class SevalCompiler {
 				return String(node.value)
 
 			case 'Identifier':
+				// Special case: 'this' keyword
+				if (node.name === 'this') {
+					return 'this'
+				}
+				// Check if it's a function parameter
+				if (params.includes(node.name)) {
+					return node.name
+				}
 				// Check if it's a primitive function
 				if (node.name in primitives) {
 					return `primitives.${node.name}`
 				}
-				return node.name
+				// Otherwise it's an object member (property or method)
+				return `this.${node.name}`
 
 			case 'MemberExpression': {
-				const object = this.compileExpression(node.object)
+				const object = this.compileExpression(node.object, params)
 				if (node.computed) {
 					// Bracket notation: obj[key]
-					const property = this.compileExpression(node.property as ASTNode)
+					const property = this.compileExpression(node.property as ASTNode, params)
 					return `${object}[${property}]`
 				}
 				// Dot notation: obj.prop
@@ -116,51 +131,53 @@ export class SevalCompiler {
 			}
 
 			case 'BinaryExpression': {
-				const left = this.compileExpression(node.left)
-				const right = this.compileExpression(node.right)
+				const left = this.compileExpression(node.left, params)
+				const right = this.compileExpression(node.right, params)
 				return `(${left} ${node.operator} ${right})`
 			}
 
 			case 'UnaryExpression': {
-				const operand = this.compileExpression(node.operand)
+				const operand = this.compileExpression(node.operand, params)
 				return `(${node.operator}${operand})`
 			}
 
 			case 'TernaryExpression': {
-				const condition = this.compileExpression(node.condition)
-				const consequent = this.compileExpression(node.consequent)
-				const alternate = this.compileExpression(node.alternate)
+				const condition = this.compileExpression(node.condition, params)
+				const consequent = this.compileExpression(node.consequent, params)
+				const alternate = this.compileExpression(node.alternate, params)
 				return `(${condition} ? ${consequent} : ${alternate})`
 			}
 
 			case 'AssignmentStatement': {
-				const target = this.compileExpression(node.target)
-				const value = this.compileExpression(node.value)
+				const target = this.compileExpression(node.target, params)
+				const value = this.compileExpression(node.value, params)
 				return `(${target} = ${value})`
 			}
 
 			case 'CallExpression': {
-				const callee = this.compileExpression(node.callee)
-				const args = node.args.map((arg) => this.compileExpression(arg)).join(', ')
+				const callee = this.compileExpression(node.callee, params)
+				const args = node.args.map((arg) => this.compileExpression(arg, params)).join(', ')
 				return `${callee}(${args})`
 			}
 
 			case 'ArrayLiteral': {
-				const elements = node.elements.map((el) => this.compileExpression(el)).join(', ')
+				const elements = node.elements.map((el) => this.compileExpression(el, params)).join(', ')
 				return `[${elements}]`
 			}
 
 			case 'ObjectLiteral': {
 				const props = node.properties
-					.map((prop) => `${JSON.stringify(prop.key)}: ${this.compileExpression(prop.value)}`)
+					.map(
+						(prop) => `${JSON.stringify(prop.key)}: ${this.compileExpression(prop.value, params)}`,
+					)
 					.join(', ')
 				return `{${props}}`
 			}
 
 			case 'ArrowFunction': {
-				const params = node.params.join(', ')
-				const body = this.compileExpression(node.body)
-				return `((${params}) => ${body})`
+				const arrowParams = node.params.join(', ')
+				const body = this.compileExpression(node.body, node.params)
+				return `((${arrowParams}) => ${body})`
 			}
 
 			default:
