@@ -7,15 +7,16 @@ export type ASTNode =
 	| StringLiteral
 	| BooleanLiteral
 	| Identifier
-	| ArrayLiteral
-	| ObjectLiteral
-	| FunctionDef
-	| ArrowFunction
-	| CallExpression
-	| MemberExpression
 	| BinaryExpression
 	| UnaryExpression
 	| TernaryExpression
+	| CallExpression
+	| ArrowFunction
+	| ArrayLiteral
+	| ObjectLiteral
+	| MemberExpression
+	| PropertyDef
+	| FunctionDef
 
 export interface NumberLiteral {
 	kind: 'NumberLiteral'
@@ -47,12 +48,17 @@ export interface ObjectLiteral {
 	properties: Array<{ key: string; value: ASTNode }>
 }
 
+export interface PropertyDef {
+	kind: 'PropertyDef'
+	name: string
+	value: ASTNode
+}
+
 export interface FunctionDef {
 	kind: 'FunctionDef'
 	name: string
 	params: string[]
 	body: ASTNode
-	isProperty?: boolean // true if defined as `name: value`, false/undefined if `name() { body }`
 }
 
 export interface CallExpression {
@@ -96,5 +102,5 @@ export interface TernaryExpression {
 
 export interface Program {
 	kind: 'Program'
-	functions: FunctionDef[]
+	functions: Array<PropertyDef | FunctionDef>
 }

@@ -337,16 +337,14 @@ export class Interpreter {
 	}
 
 	public evaluateProgram(program: Program): Environment {
-		for (const func of program.functions) {
-			// Properties (marked with isProperty: true) are evaluated immediately
-			// Methods (including zero-parameter methods) are stored as functions
-			if (func.isProperty) {
-				// Evaluate the property value and store directly
-				const value = this.evaluate(func.body, this.globalEnv)
-				this.globalEnv[func.name] = value
+		for (const item of program.functions) {
+			if (item.kind === 'PropertyDef') {
+				// Evaluate property value and store directly
+				const value = this.evaluate(item.value, this.globalEnv)
+				this.globalEnv[item.name] = value
 			} else {
-				// Methods are stored as functions
-				this.evaluate(func, {})
+				// FunctionDef: store as function
+				this.evaluate(item, {})
 			}
 		}
 		return this.globalEnv

@@ -50,7 +50,8 @@ export class Parser {
 	public parseProgram(): Program {
 		this.expect(TokenType.LBRACE)
 
-		const functions: FunctionDef[] = []
+		const functions: Array<import('./seval-ast').PropertyDef | import('./seval-ast').FunctionDef> =
+			[]
 
 		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
 			const nameToken = this.expect(TokenType.IDENTIFIER)
@@ -62,13 +63,10 @@ export class Parser {
 				this.advance() // consume :
 				const value = this.parseExpression()
 
-				// Store as a zero-parameter function that returns the value
 				functions.push({
-					kind: 'FunctionDef',
+					kind: 'PropertyDef',
 					name,
-					params: [],
-					body: value,
-					isProperty: true, // Mark as property
+					value,
 				})
 			} else if (this.peek().type === TokenType.LPAREN) {
 				// Method definition: name(params) { body }
