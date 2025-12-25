@@ -48,37 +48,19 @@ export const primitives: Record<string, (...args: Value[]) => Value> = {
 	'||': (a, b) => a || b,
 	'!': (a) => !a,
 
-	// String functions
+	// Type conversion
 	str: (v) => String(v),
 	parseNum: (s) => Number.parseFloat(String(s)),
-	strContains: (s, sub) => String(s).includes(String(sub)),
-	strStartsWith: (s, prefix) => String(s).startsWith(String(prefix)),
-	substr: (s, start, length?) =>
-		length !== undefined
-			? String(s).substr(Number(start), Number(length))
-			: String(s).substr(Number(start)),
 
-	// Array functions
-	len: (arr) => (Array.isArray(arr) ? arr.length : 0),
-	at: (arr, index) => (Array.isArray(arr) ? arr[Number(index)] : null),
+	// Array helpers (immutable operations)
 	updateAt: (arr, index, value) => {
 		if (!Array.isArray(arr)) return arr
 		const newArr = [...arr]
 		newArr[Number(index)] = value
 		return newArr
 	},
-	push: (arr, ...values) => (Array.isArray(arr) ? [...arr, ...values] : []),
-	concat: (...arrays) => {
-		const result: Value[] = []
-		for (const arr of arrays) {
-			if (Array.isArray(arr)) {
-				result.push(...arr)
-			}
-		}
-		return result
-	},
 
-	// Object functions
+	// Object helpers
 	get: (obj, key) => {
 		if (typeof obj === 'object' && obj !== null) {
 			return (obj as ValueObject)[String(key)] ?? null
@@ -104,7 +86,7 @@ export const primitives: Record<string, (...args: Value[]) => Value> = {
 		return result
 	},
 
-	// Math functions
+	// Math helpers (convenience wrappers)
 	round: (n) => Math.round(Number(n)),
 	floor: (n) => Math.floor(Number(n)),
 	ceil: (n) => Math.ceil(Number(n)),

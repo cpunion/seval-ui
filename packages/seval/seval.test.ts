@@ -3,8 +3,8 @@ import { type Environment, compileSeval, executeSeval } from './src/seval'
 
 // Full calculator code from calculator.seval
 const CALCULATOR_CODE = `{
-	hasDecimal(s) { strContains(str(s), ".") },
-	negateStr(s) { s == "0" ? "0" : strStartsWith(s, "-") ? substr(s, 1) : "-" + s },
+	hasDecimal(s) { str(s).includes(".") },
+	negateStr(s) { s == "0" ? "0" : s.startsWith("-") ? s.substring(1) : "-" + s },
 	formatNum(n) { str(round(n * 1000000000) / 1000000000) },
 	calcOp(op, a, b) {
 		formatNum(

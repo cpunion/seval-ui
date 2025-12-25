@@ -22,18 +22,18 @@
     if (todoInput == "") {
       null
     } else {
-      newTodos = push(todos, obj("id", nextTodoId, "text", todoInput, "done", false))
+      newTodos = [...todos, obj("id", nextTodoId, "text", todoInput, "done", false)]
       this.todos = newTodos
       this.nextTodoId = nextTodoId + 1
       this.todoInput = ""
-      this.todoStats = len(newTodos.filter(t => get(t, "done"))) + " of " + len(newTodos) + " completed"
+      this.todoStats = newTodos.filter(t => get(t, "done")).length + " of " + newTodos.length + " completed"
     }
   }
 
   action_deleteTodo() {
     newTodos = todos.filter(t => get(t, "id") != get(context, "id"))
     this.todos = newTodos
-    this.todoStats = len(newTodos.filter(t => get(t, "done"))) + " of " + len(newTodos) + " completed"
+    this.todoStats = newTodos.filter(t => get(t, "done")).length + " of " + newTodos.length + " completed"
   }
 
   action_submitForm() {
@@ -55,6 +55,6 @@
 
   updateDerived() {
     this.checkedText = isChecked ? "Checked!" : "Unchecked"
-    this.todoStats = len(todos.filter(t => get(t, "done"))) + " of " + len(todos) + " completed"
+    this.todoStats = todos.filter(t => get(t, "done")).length + " of " + todos.length + " completed"
   }
 }
