@@ -6,8 +6,8 @@
  */
 
 import { SevalCompiler } from './seval-compiler'
-import type { Value } from './seval-primitives'
 import { Parser } from './seval-parser'
+import type { Value } from './seval-primitives'
 import { Tokenizer } from './seval-tokenizer'
 
 /**
@@ -16,8 +16,7 @@ import { Tokenizer } from './seval-tokenizer'
  * @param source Seval source code
  * @returns Native JS object with properties and methods
  */
-// biome-ignore lint/suspicious/noExplicitAny: Returns dynamic native JS object
-export function compileSeval(source: string): any {
+export function compileSeval(source: string): Record<string, unknown> {
 	// Tokenize
 	const tokenizer = new Tokenizer(source)
 	const tokens = tokenizer.tokenize()
@@ -40,8 +39,12 @@ export function compileSeval(source: string): any {
  * @param state Optional state object (merged into env for this-based access)
  * @returns Return value
  */
-// biome-ignore lint/suspicious/noExplicitAny: Works with dynamic JS objects
-export function executeSeval(env: any, functionName: string, args: any[] = [], state?: any): any {
+export function executeSeval(
+	env: Record<string, unknown>,
+	functionName: string,
+	args: unknown[] = [],
+	state?: Record<string, unknown>,
+): unknown {
 	const func = env[functionName]
 
 	if (typeof func !== 'function') {

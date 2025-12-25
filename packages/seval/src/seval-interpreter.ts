@@ -122,7 +122,7 @@ export class Interpreter {
 						propName = node.target.property as string
 					}
 					// Set property
-					;(object as ValueObject)[propName] = value
+					; (object as ValueObject)[propName] = value
 				}
 
 				// Assignment returns the assigned value
@@ -241,6 +241,16 @@ export class Interpreter {
 					return this.evaluate(node.consequent, env)
 				}
 				return this.evaluate(node.alternate, env)
+			}
+
+			case 'BlockExpression': {
+				let result: Value = null
+
+				for (const stmt of node.statements) {
+					result = this.evaluate(stmt, env)
+				}
+
+				return result // Return last value
 			}
 
 			case 'FunctionDef': {

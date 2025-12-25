@@ -16,6 +16,7 @@ export type ASTNode =
 	| ObjectLiteral
 	| MemberExpression
 	| AssignmentStatement
+	| BlockExpression
 	| PropertyDef
 	| FunctionDef
 
@@ -105,6 +106,11 @@ export interface TernaryExpression {
 	condition: ASTNode
 	consequent: ASTNode
 	alternate: ASTNode
+}
+
+export interface BlockExpression {
+	kind: 'BlockExpression'
+	statements: ASTNode[]
 }
 
 export interface Program {

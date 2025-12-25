@@ -47,10 +47,10 @@ export enum TokenType {
 	RBRACKET = 'RBRACKET', // ]
 	COMMA = 'COMMA', // ,
 	DOT = 'DOT', // .
+	NEWLINE = 'NEWLINE', // \n
 
 	// Special
 	EOF = 'EOF',
-	NEWLINE = 'NEWLINE',
 }
 
 export interface Token {
@@ -88,7 +88,8 @@ export class Tokenizer {
 	private skipWhitespace(): void {
 		while (this.pos < this.source.length) {
 			const ch = this.peek()
-			if (ch === ' ' || ch === '\t' || ch === '\r' || ch === '\n') {
+			// Skip spaces, tabs, and carriage returns, but NOT newlines
+			if (ch === ' ' || ch === '\t' || ch === '\r') {
 				this.advance()
 			} else {
 				break
@@ -211,6 +212,12 @@ export class Tokenizer {
 		const ch = this.peek()
 		const line = this.line
 		const column = this.column
+
+		// Handle newlines
+		if (ch === '\n') {
+			this.advance()
+			return { type: TokenType.NEWLINE, value: '\n', line, column }
+		}
 
 		// Numbers
 		if (ch >= '0' && ch <= '9') {

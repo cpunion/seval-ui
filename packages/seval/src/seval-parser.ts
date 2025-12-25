@@ -29,6 +29,12 @@ export class Parser {
 		return this.tokens[this.pos++]!
 	}
 
+	private skipNewlines(): void {
+		while (this.peek().type === TokenType.NEWLINE) {
+			this.advance()
+		}
+	}
+
 	private expect(type: TokenType): Token {
 		const token = this.advance()
 		if (token.type !== type) {
@@ -51,6 +57,11 @@ export class Parser {
 		this.expect(TokenType.LBRACE)
 
 		const members: Array<PropertyDef | FunctionDef> = []
+
+		// Skip leading newlines
+		while (this.peek().type === TokenType.NEWLINE) {
+			this.advance()
+		}
 
 		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
 			const nameToken = this.expect(TokenType.IDENTIFIER)
@@ -81,11 +92,8 @@ export class Parser {
 				}
 
 				this.expect(TokenType.RPAREN)
-				this.expect(TokenType.LBRACE)
 
-				const body = this.parseExpression()
-
-				this.expect(TokenType.RBRACE)
+				const body = this.parseFunctionBody()
 
 				members.push({
 					kind: 'FunctionDef',
@@ -99,14 +107,23 @@ export class Parser {
 				)
 			}
 
+			// Skip optional comma and newlines
 			if (this.peek().type === TokenType.COMMA) {
+				this.advance()
+			}
+
+			// Skip newlines between members
+			while (this.peek().type === TokenType.NEWLINE) {
 				this.advance()
 			}
 		}
 
 		this.expect(TokenType.RBRACE)
 
-		return { kind: 'Program', members }
+		return {
+			kind: 'Program',
+			members,
+		}
 	}
 
 	// Parse function: name(param1, param2) { body }
@@ -137,6 +154,51 @@ export class Parser {
 			name,
 			params,
 			body,
+		}
+	}
+
+	/**
+	 * Parse function body - supports multi-statement blocks
+	 */
+	private parseFunctionBody(): ASTNode {
+		this.expect(TokenType.LBRACE)
+
+		const statements: ASTNode[] = []
+
+		// Skip leading newlines
+		while (this.peek().type === TokenType.NEWLINE) {
+			this.advance()
+		}
+
+		while (this.peek().type !== TokenType.RBRACE && this.peek().type !== TokenType.EOF) {
+			// Parse statement/expression
+			statements.push(this.parseAssignment())
+
+			// Skip newlines after statement
+			while (this.peek().type === TokenType.NEWLINE) {
+				this.advance()
+			}
+
+			// Check if we're done (closing brace)
+			if (this.peek().type === TokenType.RBRACE) {
+				break
+			}
+
+			// If not closing brace and not EOF, there must be another statement
+			// (newlines were already skipped above)
+		}
+
+		this.expect(TokenType.RBRACE)
+
+		// Single statement: return it directly
+		if (statements.length === 1) {
+			return statements[0]
+		}
+
+		// Multiple statements: return BlockExpression
+		return {
+			kind: 'BlockExpression',
+			statements,
 		}
 	}
 
@@ -176,11 +238,15 @@ export class Parser {
 	private parseTernary(): ASTNode {
 		const expr = this.parseLogicalOr()
 
+		this.skipNewlines() // Skip newlines before checking for ?
 		if (this.peek().type === TokenType.QUESTION) {
 			this.advance()
-			const consequent = this.parseExpression()
+			this.skipNewlines()
+			const consequent = this.parseTernary()
+			this.skipNewlines()
 			this.expect(TokenType.COLON)
-			const alternate = this.parseExpression()
+			this.skipNewlines()
+			const alternate = this.parseTernary()
 
 			return {
 				kind: 'TernaryExpression',
@@ -199,6 +265,7 @@ export class Parser {
 
 		while (this.peek().type === TokenType.OR) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseLogicalAnd()
 			left = {
 				kind: 'BinaryExpression',
@@ -217,6 +284,7 @@ export class Parser {
 
 		while (this.peek().type === TokenType.AND) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseEquality()
 			left = {
 				kind: 'BinaryExpression',
@@ -235,6 +303,7 @@ export class Parser {
 
 		while (this.peek().type === TokenType.EQ || this.peek().type === TokenType.NE) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseRelational()
 			left = {
 				kind: 'BinaryExpression',
@@ -258,6 +327,7 @@ export class Parser {
 			this.peek().type === TokenType.GE
 		) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseAdditive()
 			left = {
 				kind: 'BinaryExpression',
@@ -276,6 +346,7 @@ export class Parser {
 
 		while (this.peek().type === TokenType.PLUS || this.peek().type === TokenType.MINUS) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseMultiplicative()
 			left = {
 				kind: 'BinaryExpression',
@@ -298,6 +369,7 @@ export class Parser {
 			this.peek().type === TokenType.PERCENT
 		) {
 			const op = this.advance()
+			this.skipNewlines()
 			const right = this.parseUnary()
 			left = {
 				kind: 'BinaryExpression',
@@ -333,15 +405,18 @@ export class Parser {
 			if (this.peek().type === TokenType.LPAREN) {
 				// Function call
 				this.advance()
+				this.skipNewlines()
 				const args: ASTNode[] = []
 
 				while (this.peek().type !== TokenType.RPAREN) {
 					args.push(this.parseExpression())
+					this.skipNewlines() // Skip newlines after argument
 					if (this.peek().type === TokenType.COMMA) {
 						this.advance()
+						this.skipNewlines()
 					}
 				}
-
+				this.skipNewlines()
 				this.expect(TokenType.RPAREN)
 
 				expr = {
@@ -362,7 +437,9 @@ export class Parser {
 			} else if (this.peek().type === TokenType.LBRACKET) {
 				// Bracket notation: arr[index] or obj["key"]
 				this.advance() // consume [
-				const property = this.parseExpression()
+				this.skipNewlines()
+				const property = this.parseExpression() // Changed from 'index' to 'property' to match AST node structure
+				this.skipNewlines()
 				this.expect(TokenType.RBRACKET)
 				expr = {
 					kind: 'MemberExpression',
@@ -380,6 +457,9 @@ export class Parser {
 
 	// Parse primary: number, string, boolean, identifier, array, object, (expr)
 	private parsePrimary(): ASTNode {
+		// Skip newlines before parsing primary expression
+		this.skipNewlines()
+
 		const token = this.peek()
 
 		if (token.type === TokenType.NUMBER) {
@@ -436,15 +516,17 @@ export class Parser {
 		if (token.type === TokenType.LBRACKET) {
 			// Array literal
 			this.advance()
+			this.skipNewlines()
 			const elements: ASTNode[] = []
 
 			while (this.peek().type !== TokenType.RBRACKET) {
 				elements.push(this.parseExpression())
 				if (this.peek().type === TokenType.COMMA) {
 					this.advance()
+					this.skipNewlines()
 				}
 			}
-
+			this.skipNewlines()
 			this.expect(TokenType.RBRACKET)
 			return {
 				kind: 'ArrayLiteral',

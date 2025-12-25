@@ -53,41 +53,39 @@ null
 
 ### Arithmetic
 
-| Operator | Description    | S-expr    |
-| -------- | -------------- | --------- |
-| `a + b`  | Addition       | `(+ a b)` |
-| `a - b`  | Subtraction    | `(- a b)` |
-| `a * b`  | Multiplication | `(* a b)` |
-| `a / b`  | Division       | `(/ a b)` |
-| `a % b`  | Modulo         | `(% a b)` |
-| `-a`     | Unary minus    | `(- 0 a)` |
+| Operator | Description    |
+| -------- | -------------- |
+| `a + b`  | Addition       |
+| `a - b`  | Subtraction    |
+| `a * b`  | Multiplication |
+| `a / b`  | Division       |
+| `a % b`  | Modulo         |
+| `-a`     | Unary minus    |
 
 ### Comparison
 
-| Operator | Description      | S-expr     |
-| -------- | ---------------- | ---------- |
-| `a == b` | Equality         | `(= a b)`  |
-| `a != b` | Inequality       | `(!= a b)` |
-| `a < b`  | Less than        | `(< a b)`  |
-| `a > b`  | Greater than     | `(> a b)`  |
-| `a <= b` | Less or equal    | `(<= a b)` |
-| `a >= b` | Greater or equal | `(>= a b)` |
+| Operator | Description      |
+| -------- | ---------------- |
+| `a == b` | Equality         |
+| `a != b` | Inequality       |
+| `a < b`  | Less than        |
+| `a > b`  | Greater than     |
+| `a <= b` | Less or equal    |
+| `a >= b` | Greater or equal |
 
 ### Logical
 
-| Operator   | Description | S-expr      |
-| ---------- | ----------- | ----------- |
-| `a && b`   | Logical AND | `(and a b)` |
-| `a \|\| b` | Logical OR  | `(or a b)`  |
-| `!a`       | Logical NOT | `(not a)`   |
+| Operator   | Description |
+| ---------- | ----------- |
+| `a && b`   | Logical AND |
+| `a \|\| b` | Logical OR  |
+| `!a`       | Logical NOT |
 
 ### Ternary Conditional
 
 ```javascript
 condition ? valueIfTrue : valueIfFalse
 ```
-
-Compiles to: `(if condition valueIfTrue valueIfFalse)`
 
 ## Operator Precedence (highest to lowest)
 
@@ -120,7 +118,7 @@ x => x * 2
 (x, y) => x > y ? x : y
 ```
 
-Arrow functions compile to `(lambda (params...) body)`.
+Arrow functions create anonymous functions that can be passed as arguments or assigned to variables.
 
 ### Function Calls
 
@@ -178,30 +176,26 @@ Function bodies support multiple statements, one per line:
 **Rules for multi-line bodies:**
 
 - Each line is a separate statement/expression
-- Statements are separated by newlines or semicolons (`;`)
-- Semicolons are optional but can be used to separate multiple statements on one line
-- A line continues if it ends with a binary operator (`+`, `-`, `*`, `/`, `?`, `:`, `&&`, `||`, etc.)
+- Statements are separated by newlines
 - The last expression is the implicit return value
-- Multiple statements compile to `(progn stmt1 stmt2 ... lastExpr)`
+- All statements except the last are evaluated for side effects (assignments)
 
 **Assignment expressions:**
 
 ```javascript
-x = value; // Compiles to: (define x value) if x is new
-a = b + c; // Compiles to: (define a (+ b c))
-display = "42"; // Rebinds the existing symbol `display`
+x = value  // Assigns value to x
+a = b + c  // Assigns result of b + c to a
+this.display = "42"  // Updates object property
 ```
 
-Assignments either create a new binding (if the identifier has never been defined) or
-mutate an existing binding within the current environment. This is how component
-state is updated inside method bodies.
+Assignments update variables or object properties. Use `this.property` to access and modify object state within methods.
 
 ### Important Notes
 
-- Method body uses `{ }` braces, not `=> ` arrow
+- Method body uses `{ }` braces, not `=>` arrow
 - No explicit `return` keyword - last expression is returned
-- Use `=` for assignment (creates local binding via `define`)
-- Object compiles to: `(progn (define (method1 params) body1) (define (method2 params) body2) ...)`
+- Use `=` for assignment
+- Multiple statements are executed in sequence, last value is returned
 
 ## Property Access
 
