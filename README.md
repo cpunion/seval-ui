@@ -1,5 +1,11 @@
 # seval-ui
 
+[![CI](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/cpunion/seval-ui/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/cpunion/seval-ui/graph/badge.svg)](https://codecov.io/gh/cpunion/seval-ui)
+[![npm @seval-ui/seval](https://img.shields.io/npm/v/@seval-ui/seval?label=%40seval-ui%2Fseval)](https://www.npmjs.com/package/@seval-ui/seval)
+[![npm @seval-ui/react](https://img.shields.io/npm/v/@seval-ui/react?label=%40seval-ui%2Freact)](https://www.npmjs.com/package/@seval-ui/react)
+[![npm @seval-ui/react-code](https://img.shields.io/npm/v/@seval-ui/react-code?label=%40seval-ui%2Freact-code)](https://www.npmjs.com/package/@seval-ui/react-code)
+
 A2UI (Agent to UI) protocol implementation for React, enabling AI Agents to dynamically render user interfaces.
 
 > A2UI is an open protocol by Google. See [github.com/google/A2UI](https://github.com/google/A2UI) for the specification.
