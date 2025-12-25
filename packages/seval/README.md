@@ -6,44 +6,43 @@
 [![npm version](https://img.shields.io/npm/v/@seval-ui/seval.svg)](https://www.npmjs.com/package/@seval-ui/seval)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`@seval-ui/seval` is a self-hosted compiler that converts JavaScript-like syntax into S-expressions for evaluation with [@seval-ui/sexp](../sexp).
+`@seval-ui/seval` is a JavaScript-like language with a native TypeScript runtime for evaluating logic in UI applications.
 
 ## Installation
 
 ```bash
-npm install @seval-ui/seval @seval-ui/sexp
+npm install @seval-ui/seval
 # or
-pnpm add @seval-ui/seval @seval-ui/sexp
+pnpm add @seval-ui/seval
 ```
 
 ## Quick Start
 
 ```typescript
-import { createEvaluator, deserializeSExpr } from '@seval-ui/sexp'
-import compilerSource from '@seval-ui/seval'
+import { compileSeval, executeSeval } from '@seval-ui/seval/seval'
 
-const { evalString, evaluate } = createEvaluator({ maxDepth: 10_000 })
-const env = {}
+// Compile Seval code
+const code = `{
+  double(x) { x * 2 },
+  add(a, b) { a + b }
+}`
 
-// Load the compiler
-evalString(`(progn ${compilerSource})`, env)
+const env = compileSeval(code)
 
-// Compile and evaluate a program
-const miniProgram = 'x => x + 1'
-const sexprRaw = evalString(
-  `(compile-to-sexpr "${miniProgram.replace(/"/g, '\\"')}")`,
-  env,
-)
-const sexpr = deserializeSExpr(sexprRaw)
-evaluate(sexpr, env)
+// Execute functions
+const result1 = executeSeval(env, 'double', [5])
+console.log(result1) // 10
+
+const result2 = executeSeval(env, 'add', [3, 7])
+console.log(result2) // 10
 ```
 
 ## Features
 
-- **Self-hosted compiler** – tokenizer, parser and transformer written in seval
-- **JavaScript-like syntax** – familiar syntax with arrow functions, objects, if/else
-- **Embeddable** – returns compiler source as string for custom toolchains
-- **Integration tested** – includes calculator example for e2e testing
+- **Native TypeScript runtime** – Direct AST interpretation without intermediate compilation
+- **JavaScript-like syntax** – Familiar syntax with arrow functions, objects, if/else
+- **Lightweight** – No external dependencies for runtime evaluation
+- **Type-safe** – Full TypeScript support with type definitions
 
 ## Syntax Overview
 
@@ -82,13 +81,18 @@ evaluate(sexpr, env)
 }
 ```
 
-## Built-in Helpers
+## Built-in Primitives
 
-When using seval programs, register these primitives:
+The Seval runtime includes these built-in functions:
 
-- **String helpers**: `parseNum`, `str`, `strContains`, `strStartsWith`, `substr`
-- **Collection helpers**: `list`, `append`, `obj`, `get`, `set`
-- **Control constructs**: `if`, `cond`, `progn`, `define`, `lambda`, `let`, `for`
+- **Arithmetic**: `+`, `-`, `*`, `/`, `%`
+- **Comparison**: `=`, `!=`, `<`, `<=`, `>`, `>=`
+- **Logic**: `and`, `or`, `not`
+- **String**: `str`, `parseNum`, `strContains`, `strStartsWith`, `substr`
+- **Array**: `list`, `nth`, `length`, `updateAt`, `append`, `prepend`, `first`, `rest`, `filter`, `map`, `reduce`
+- **Object**: `obj`, `get`, `merge`
+- **Math**: `max`, `min`, `round`, `floor`, `ceil`
+- **Time**: `now`
 
 ## License
 

@@ -6,10 +6,9 @@ S-expression based UI runtime for React.
 
 | Package | Description |
 |---------|-------------|
-| `@seval-ui/sexp` | S-expression evaluator engine |
-| `@seval-ui/seval` | JavaScript-like language compiler |
+| `@seval-ui/seval` | JavaScript-like language compiler and runtime |
 | `@seval-ui/react` | React UI components |
-| `@seval-ui/react-code` | SExpRuntime for React |
+| `@seval-ui/react-code` | Seval runtime for React |
 
 ## Installation
 
