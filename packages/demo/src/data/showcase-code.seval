@@ -19,30 +19,30 @@
   }
 
   action_addTodo() {
-    todoInput == ""
-      ? null
-      : (
-          newTodos = append(todos, obj("id", nextTodoId, "text", todoInput, "done", false)),
-          this.todos = newTodos,
-          this.nextTodoId = nextTodoId + 1,
-          this.todoInput = "",
-          this.todoStats = length(filter(newTodos, t => get(t, "done"))) + " of " + length(newTodos) + " completed"
-        )
+    if (todoInput == "") {
+      null
+    } else {
+      newTodos = push(todos, obj("id", nextTodoId, "text", todoInput, "done", false))
+      this.todos = newTodos
+      this.nextTodoId = nextTodoId + 1
+      this.todoInput = ""
+      this.todoStats = len(newTodos.filter(t => get(t, "done"))) + " of " + len(newTodos) + " completed"
+    }
   }
 
   action_deleteTodo() {
-    newTodos = filter(todos, t => get(t, "id") != get(context, "id"))
+    newTodos = todos.filter(t => get(t, "id") != get(context, "id"))
     this.todos = newTodos
-    this.todoStats = length(filter(newTodos, t => get(t, "done"))) + " of " + length(newTodos) + " completed"
+    this.todoStats = len(newTodos.filter(t => get(t, "done"))) + " of " + len(newTodos) + " completed"
   }
 
   action_submitForm() {
-    formName == "" || formEmail == ""
-      ? (this.formResultText = "Please fill in Name and Email")
-      : (
-          this.formSubmitted = true,
-          this.formResultText = "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)
-        )
+    if (formName == "" || formEmail == "") {
+      this.formResultText = "Please fill in Name and Email"
+    } else {
+      this.formSubmitted = true
+      this.formResultText = "Submitted: " + formName + " <" + formEmail + ">" + (formMessage == "" ? "" : " - " + formMessage)
+    }
   }
 
   action_resetForm() {
@@ -55,6 +55,6 @@
 
   updateDerived() {
     this.checkedText = isChecked ? "Checked!" : "Unchecked"
-    this.todoStats = length(filter(todos, t => get(t, "done"))) + " of " + length(todos) + " completed"
+    this.todoStats = len(todos.filter(t => get(t, "done"))) + " of " + len(todos) + " completed"
   }
 }
