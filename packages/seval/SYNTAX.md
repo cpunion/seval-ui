@@ -329,15 +329,18 @@ test defaults to `true` when omitted.
 
 ## Differences from JavaScript
 
-| Feature     | MiniJS                          | JavaScript                 |
-| ----------- | ------------------------------- | -------------------------- |
-| Equality    | `==` is strict (like `===`)     | `==` is loose              |
-| Logical ops | Return boolean                  | Return operand             |
-| Statements  | Expression-only                 | Has statements             |
-| Variables   | No `const`/`let`/`var`          | Has declarations           |
-| Objects     | Method shorthand only           | Full object literals       |
-| Classes     | Not supported                   | Supported                  |
-| Loops       | `for (init; test; update)` only | `for`, `while`, `do`, etc. |
+| Feature        | MiniJS                                    | JavaScript                 |
+| -------------- | ----------------------------------------- | -------------------------- |
+| Equality       | `==` is strict (like `===`)               | `==` is loose              |
+| Logical ops    | Return boolean                            | Return operand             |
+| Statements     | Expression-only                           | Has statements             |
+| Variables      | No `const`/`let`/`var`, use `this` prefix | Has declarations           |
+| Semicolons     | Optional (newlines separate statements)   | Optional (ASI)             |
+| Object syntax  | Method shorthand + property syntax        | Full object literals       |
+| Classes        | Not supported                             | Supported                  |
+| Loops          | `for (init; test; update)` only           | `for`, `while`, `do`, etc. |
+| Property access| Dot and bracket notation                  | Same                       |
+| Functions      | Arrow functions and method definitions    | Multiple syntaxes          |
 
 ## Built-in Functions (from seval)
 
