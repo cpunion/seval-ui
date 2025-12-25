@@ -88,8 +88,8 @@ statement_list = statement , { separator , statement } , [ separator ] ;
 ```ebnf
 statement      = if_statement | for_statement | expression_statement ;
 
-if_statement   = "if" , "(" , expression , ")" , block ,
-                 { "elif" , "(" , expression , ")" , block } ,
+if_statement   = "if" , expression , block ,
+                 { "elif" , expression , block } ,
                  [ "else" , block ] ;
 
 (* For statement: two forms *)

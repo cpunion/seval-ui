@@ -45,7 +45,7 @@ A2UI 协议的 React SDK 实现：
 扩展 A2UI 的**本地交互能力**：
 
 - **Code 组件**: 在 surface 中嵌入可执行逻辑
-- **Seval (MiniJS)**: 轻量级 JS-like 语言，执行本地计算
+- **Seval**: 轻量级 JS-like 语言，执行本地计算
 - **本地 Action 处理**: 无需 Agent 响应即可更新 UI
 
 ---

@@ -18,6 +18,7 @@ export enum TokenType {
 	IF = 'IF',
 	ELIF = 'ELIF',
 	ELSE = 'ELSE',
+	FOR = 'FOR',
 
 	// Operators
 	PLUS = 'PLUS',
@@ -28,6 +29,8 @@ export enum TokenType {
 
 	EQ = 'EQ', // ==
 	NE = 'NE', // !=
+	STRICT_EQ = 'STRICT_EQ', // ===
+	STRICT_NE = 'STRICT_NE', // !==
 	LT = 'LT', // <
 	LE = 'LE', // <=
 	GT = 'GT', // >
@@ -96,6 +99,14 @@ export class Tokenizer {
 			// Skip spaces, tabs, and carriage returns, but NOT newlines
 			if (ch === ' ' || ch === '\t' || ch === '\r') {
 				this.advance()
+			} else if (ch === '/' && this.peek(1) === '/') {
+				// Skip line comments
+				this.advance() // skip first /
+				this.advance() // skip second /
+				while (this.pos < this.source.length && this.peek() !== '\n') {
+					this.advance()
+				}
+				// Don't skip the newline - it will be returned as a token
 			} else {
 				break
 			}
@@ -202,6 +213,7 @@ export class Tokenizer {
 		else if (value === 'if') type = TokenType.IF
 		else if (value === 'elif') type = TokenType.ELIF
 		else if (value === 'else') type = TokenType.ELSE
+		else if (value === 'for') type = TokenType.FOR
 
 		return { type, value, line, column }
 	}
@@ -241,6 +253,20 @@ export class Tokenizer {
 		// Identifiers
 		if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_') {
 			return this.readIdentifier()
+		}
+
+		// Three-character operators (must check before two-character)
+		if (ch === '=' && this.peek(1) === '=' && this.peek(2) === '=') {
+			this.advance()
+			this.advance()
+			this.advance()
+			return { type: TokenType.STRICT_EQ, value: '===', line, column }
+		}
+		if (ch === '!' && this.peek(1) === '=' && this.peek(2) === '=') {
+			this.advance()
+			this.advance()
+			this.advance()
+			return { type: TokenType.STRICT_NE, value: '!==', line, column }
 		}
 
 		// Two-character operators

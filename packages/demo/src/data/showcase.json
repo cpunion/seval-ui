@@ -280,7 +280,7 @@
           "component": {
             "Text": {
               "text": {
-                "literalString": "Demonstrating all components with MiniJS logic"
+                "literalString": "Demonstrating all components with Seval logic"
               },
               "usageHint": "body"
             }

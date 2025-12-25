@@ -221,6 +221,17 @@ export class SevalCompiler {
 				return `(${condition} ? ${consequent} : null)`
 			}
 
+			case 'ForStatement': {
+				// For loop: for init; condition; update { body }
+				const init = node.init ? this.compileExpression(node.init, params) : ''
+				const condition = this.compileExpression(node.condition, params)
+				const update = node.update ? this.compileExpression(node.update, params) : ''
+				const body = this.compileExpression(node.body, params)
+
+				// Use IIFE to create for loop
+				return `(() => { for (${init}; ${condition}; ${update}) { ${body}; } return null; }).call(this)`
+			}
+
 			default:
 				throw new Error(`Cannot compile expression of kind: ${(node as { kind: string }).kind}`)
 		}

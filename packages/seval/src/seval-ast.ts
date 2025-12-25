@@ -18,6 +18,7 @@ export type ASTNode =
 	| MemberExpression
 	| AssignmentStatement
 	| IfStatement
+	| ForStatement
 	| BlockExpression
 	| PropertyDef
 	| FunctionDef
@@ -125,6 +126,14 @@ export interface IfStatement {
 	condition: ASTNode
 	consequent: ASTNode
 	alternate?: ASTNode // Can be another IfStatement (for elif) or BlockExpression/other (for else)
+}
+
+export interface ForStatement {
+	kind: 'ForStatement'
+	init?: ASTNode // initialization expression (optional)
+	condition: ASTNode // loop condition
+	update?: ASTNode // update expression (optional)
+	body: ASTNode // loop body
 }
 
 export interface Program {

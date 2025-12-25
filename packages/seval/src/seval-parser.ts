@@ -226,11 +226,16 @@ export class Parser {
 		}
 	}
 
-	// Parse statement (if statement or expression)
+	// Parse statement (if statement, for loop, or expression)
 	private parseStatement(): ASTNode {
 		// Check for if statement
 		if (this.peek().type === TokenType.IF) {
 			return this.parseIfStatement()
+		}
+
+		// Check for for loop
+		if (this.peek().type === TokenType.FOR) {
+			return this.parseForStatement()
 		}
 
 		// Otherwise parse as expression/assignment
@@ -255,6 +260,53 @@ export class Parser {
 			condition,
 			consequent,
 			alternate,
+		}
+	}
+
+	// Parse for statement: for init; condition; update { body } or for condition { body }
+	private parseForStatement(): ASTNode {
+		this.expect(TokenType.FOR)
+
+		// Try to detect which form: three-part or condition-only
+		// Look for semicolons to distinguish
+		const savedPos = this.pos
+
+		// Parse what might be init or condition
+		const first = this.parseAssignment()
+
+		if (this.peek().type === TokenType.SEMICOLON) {
+			// Three-part form: for init; condition; update { body }
+			this.advance() // consume first ;
+
+			// Parse condition
+			const condition = this.parseExpression()
+
+			this.expect(TokenType.SEMICOLON)
+
+			// Parse update
+			const update = this.parseAssignment()
+
+			// Parse body
+			const body = this.parseFunctionBody()
+
+			return {
+				kind: 'ForStatement',
+				init: first,
+				condition,
+				update,
+				body,
+			}
+		}
+
+		// Condition-only form: for condition { body }
+		const body = this.parseFunctionBody()
+
+		return {
+			kind: 'ForStatement',
+			init: undefined,
+			condition: first,
+			update: undefined,
+			body,
 		}
 	}
 
@@ -443,11 +495,16 @@ export class Parser {
 		return left
 	}
 
-	// Parse equality: expr == expr, expr != expr
+	// Parse equality: expr == expr, expr != expr, expr === expr, expr !== expr
 	private parseEquality(): ASTNode {
 		let left = this.parseRelational()
 
-		while (this.peek().type === TokenType.EQ || this.peek().type === TokenType.NE) {
+		while (
+			this.peek().type === TokenType.EQ ||
+			this.peek().type === TokenType.NE ||
+			this.peek().type === TokenType.STRICT_EQ ||
+			this.peek().type === TokenType.STRICT_NE
+		) {
 			const op = this.advance()
 			const right = this.parseRelational()
 			left = {

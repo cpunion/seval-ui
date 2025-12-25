@@ -64,14 +64,16 @@ null
 
 ### Comparison
 
-| Operator | Description      |
-| -------- | ---------------- |
-| `a == b` | Equality         |
-| `a != b` | Inequality       |
-| `a < b`  | Less than        |
-| `a > b`  | Greater than     |
-| `a <= b` | Less or equal    |
-| `a >= b` | Greater or equal |
+| Operator  | Description              |
+| --------- | ------------------------ |
+| `a == b`  | Equality (strict)        |
+| `a != b`  | Inequality (strict)      |
+| `a === b` | Strict equality          |
+| `a !== b` | Strict inequality        |
+| `a < b`   | Less than                |
+| `a > b`   | Greater than             |
+| `a <= b`  | Less or equal            |
+| `a >= b`  | Greater or equal         |
 
 ### Logical
 
@@ -93,7 +95,7 @@ condition ? valueIfTrue : valueIfFalse
 2. Multiplicative: `*`, `/`, `%`
 3. Additive: `+`, `-`
 4. Comparison: `<`, `>`, `<=`, `>=`
-5. Equality: `==`, `!=`
+5. Equality: `==`, `!=`, `===`, `!==`
 6. Logical AND: `&&`
 7. Logical OR: `||`
 8. Ternary: `?:`
@@ -352,81 +354,44 @@ are handled separately.
 
 ## Built-in Functions (from seval)
 
-Seval code has access to all seval primitives:
+Seval compiles to native JavaScript, so all JavaScript native methods are available on values.
 
-### Universal Properties
+### Globals
 
-All values have these properties and methods:
+These global objects are available:
 
-- `value.type` - Get type name as string
-- `value.str()` - Convert to string
+- `Math` - JavaScript Math object (`Math.round()`, `Math.floor()`, `Math.ceil()`, `Math.abs()`, `Math.min()`, `Math.max()`)
+- `Number` - JavaScript Number object (`Number.parseFloat()`, `Number.parseInt()`)
+- `String` - JavaScript String constructor
+- `Array` - JavaScript Array constructor
+- `Date` - JavaScript Date object (`Date.now()`)
 
-### Number
+### Primitive Functions
 
-Number parsing:
+- `obj(k1, v1, k2, v2, ...)` - Create object from key-value pairs
+- `merge(obj1, obj2, ...)` - Merge multiple objects
+- `get(obj, key)` - Get property from object (null-safe)
 
-- `Number.parse(str)` - Parse string to number
+### Native Methods on Values
 
-### Math
+Since Seval compiles to JavaScript, you can use native methods:
 
-Math functions are accessed through the `Math` namespace:
-
-- `Math.round(n)` - Round to nearest integer
-- `Math.floor(n)` - Round down
-- `Math.ceil(n)` - Round up
-- `Math.abs(n)` - Absolute value
-- `Math.min(a, b, ...)` - Minimum value
-- `Math.max(a, b, ...)` - Maximum value
-
-### String
-
-String properties and methods:
-
+**String:**
 - `s.length` - String length
-- `s.substr(start, end)` - Get substring
-- `s.contains(substr)` - Check if contains substring
+- `s.substring(start, end)` - Get substring
+- `s.includes(substr)` - Check if contains substring
 - `s.startsWith(prefix)` - Check if starts with prefix
 - `s.concat(other)` - Concatenate strings
 
-### Array
-
-Arrays are created using bracket syntax `[...]`:
-
-```javascript
-[]                    // Empty array
-[1, 2, 3]            // Array with elements
-["a", "b"]           // String array
-[1, "two", true]     // Mixed types
-```
-
-Array methods:
-
-- `arr.length` - Get array length
+**Array:**
+- `arr.length` - Array length
 - `arr[index]` - Get element at index
-- `arr.first()` - Get first element
-- `arr.rest()` - Get all elements except first
-- `arr.append(item)` - Append item (returns new array)
-- `arr.prepend(item)` - Prepend item (returns new array)
 - `arr.map(fn)` - Map function over array
 - `arr.filter(fn)` - Filter array
 - `arr.reduce(fn, init)` - Reduce array
+- `arr.concat([item])` - Append items (returns new array)
 
-### Object
-
-Objects are created using brace syntax `{...}`:
-
-```javascript
-{}                           // Empty object
-{ name: "Alice", age: 30 }  // Object with properties
-```
-
-Object methods:
-
-- `obj.keys()` - Get all keys
-- `obj.merge(other)` - Merge with another object (returns new object)
-
-### Time
-
-Time functions are accessed through the `Time` namespace:
-
-- `Time.now()` - Current timestamp in milliseconds
+**Object:**
+- `obj.property` - Access property
+- `obj[key]` - Access property with computed key
+- `Object.keys(obj)` - Get all keys

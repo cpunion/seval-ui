@@ -19,9 +19,9 @@ pnpm add @seval-ui/seval
 ## Quick Start
 
 ```typescript
-import { compileSeval } from '@seval-ui/seval'
+import { compileSeval, executeSeval } from '@seval-ui/seval'
 
-// Compile Seval code
+// Compile Seval code to native JavaScript object
 const code = `{
   double(x) { x * 2 },
   add(a, b) { a + b }
@@ -29,33 +29,38 @@ const code = `{
 
 const env = compileSeval(code)
 
-// Execute functions
-const result1 = env.exec('double', [5])
+// Call methods directly on the compiled object
+const result1 = env.double(5)
 console.log(result1) // 10
 
-const result2 = env.exec('add', [3, 7])
+const result2 = env.add(3, 7)
 console.log(result2) // 10
 
-// Extend environment with custom functions
-const extendedEnv = env.bind({
-  mul: (a, b) => a * b,
-  greet: (name) => `Hello, ${name}!`
-})
+// Or use executeSeval for dynamic function calls
+const result3 = executeSeval(env, 'double', [5])
+console.log(result3) // 10
 
-const result3 = extendedEnv.exec('mul', [5, 6])
-console.log(result3) // 30
+// With state management (this-based access)
+const stateCode = `{
+  count: 0,
+  increment() { this.count = this.count + 1 }
+}`
+const stateEnv = compileSeval(stateCode)
 
-// Evaluate expressions with nested calls
-const result4 = extendedEnv.eval('greet(mul(5, 6))')
-console.log(result4) // "Hello, 30!"
+// Execute with state tracking
+const state = { count: 0 }
+executeSeval(stateEnv, 'increment', [], state)
+console.log(state.count) // 1
 ```
 
 ## Features
 
-- **Native TypeScript runtime** – Direct AST interpretation without intermediate compilation
-- **JavaScript-like syntax** – Familiar syntax with arrow functions, objects, if/else
+- **Compiles to native JavaScript** – Uses `new Function()` for zero-overhead execution
+- **JavaScript-like syntax** – Familiar syntax with arrow functions, objects, if/else, for loops
+- **Line comments** – Use `//` for single-line comments
 - **Lightweight** – No external dependencies for runtime evaluation
 - **Type-safe** – Full TypeScript support with type definitions
+- **Sandbox protection** – Blocks access to dangerous reflection properties
 
 ## Syntax Overview
 
@@ -65,15 +70,15 @@ console.log(result4) // "Hello, 30!"
   display: "0",
   count: 0,
 
-  // Methods
+  // Methods with implicit return (last expression)
   increment() {
     this.count = this.count + 1
   },
 
-  // Arrow functions
+  // Single-expression functions
   double(x) { x * 2 },
 
-  // Control flow
+  // Control flow with if/elif/else
   action(value) {
     if value > 0 {
       this.display = "positive"
@@ -84,11 +89,19 @@ console.log(result4) // "Hello, 30!"
     }
   },
 
-  // For loops
+  // For loops (three-part form)
   sum() {
-    total = 0
+    this.total = 0
     for i = 0; i < 10; i = i + 1 {
-      total = total + i
+      this.total = this.total + i
+    }
+    this.total  // Returns 45
+  },
+
+  // For loops (condition-only form)
+  countdown() {
+    for this.count > 0 {
+      this.count = this.count - 1
     }
   }
 }
@@ -96,18 +109,18 @@ console.log(result4) // "Hello, 30!"
 
 ## Built-in Primitives
 
-The Seval runtime includes these built-in functions:
+The Seval runtime includes these built-in functions and globals:
 
-- **Universal**: `value.type`, `value.str()`
-- **Arithmetic**: `+`, `-`, `*`, `/`, `%`
-- **Comparison**: `=`, `!=`, `<`, `<=`, `>`, `>=`
-- **Logic**: `and`, `or`, `not`
-- **Number**: `Number.parse(str)`
-- **String**: `s.length`, `s.substr()`, `s.contains()`, `s.startsWith()`, `s.concat()`
-- **Array**: `[...]` syntax, `arr.length`, `arr[index]`, `arr.first()`, `arr.rest()`, `arr.append()`, `arr.prepend()`, `arr.map()`, `arr.filter()`, `arr.reduce()`
-- **Object**: `{...}` syntax, `obj.property`, `obj[key]`, `obj.keys()`, `obj.merge()`
-- **Math**: `Math.max()`, `Math.min()`, `Math.round()`, `Math.floor()`, `Math.ceil()`, `Math.abs()`
-- **Time**: `Time.now()`
+- **Arithmetic**: `+`, `-`, `*`, `/`, `%` (+ also handles string concatenation)
+- **Comparison**: `==`, `!=`, `===`, `!==`, `<`, `<=`, `>`, `>=`
+- **Logical**: `&&`, `||`, `!`
+- **Object helpers**: `obj(k1, v1, k2, v2, ...)`, `merge(obj1, obj2, ...)`, `get(obj, key)`
+- **Globals**: `Math`, `Number`, `Date`, `String`, `Array`
+
+Native JavaScript methods are accessible on values:
+- **String**: `s.length`, `s.substring()`, `s.includes()`, `s.startsWith()`, `s.concat()`
+- **Array**: `arr.length`, `arr[index]`, `arr.map()`, `arr.filter()`, `arr.concat()`, `arr.push()`
+- **Object**: `obj.property`, `obj[key]`
 
 ## License
 
