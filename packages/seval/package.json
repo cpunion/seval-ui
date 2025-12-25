@@ -38,9 +38,7 @@
 		"url": "https://github.com/cpunion/seval-ui.git",
 		"directory": "packages/seval"
 	},
-	"dependencies": {
-		"@seval-ui/sexp": "workspace:*"
-	},
+	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
 		"@types/bun": "latest",

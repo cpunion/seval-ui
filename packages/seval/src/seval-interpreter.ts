@@ -219,7 +219,8 @@ export class Interpreter {
 				// Create new environment for function call
 				const funcEnv: Environment = { ...sFunc.closure }
 				for (let i = 0; i < sFunc.params.length; i++) {
-					funcEnv[sFunc.params[i]!] = args[i] ?? null
+					const param = sFunc.params[i]
+					if (param) funcEnv[param] = args[i] ?? null
 				}
 
 				return this.evaluate(sFunc.body, funcEnv)
@@ -318,7 +319,8 @@ export class Interpreter {
 		const sFunc = fn as SFunction
 		const funcEnv: Environment = { ...sFunc.closure, ...env }
 		for (let i = 0; i < sFunc.params.length; i++) {
-			funcEnv[sFunc.params[i]!] = args[i] ?? null
+			const param = sFunc.params[i]
+			if (param) funcEnv[param] = args[i] ?? null
 		}
 
 		return this.evaluate(sFunc.body, funcEnv)

@@ -340,7 +340,7 @@ export const defaultRegistry: ComponentRegistry = {
 
 		return (
 			<div className="a2ui-textfield">
-				{label != null && <label>{String(label)}</label>}
+				{label != null && <span className="a2ui-textfield-label">{String(label)}</span>}
 				{fieldType === 'longText' ? (
 					<textarea value={String(value)} onChange={handleChange} rows={4} />
 				) : (
@@ -438,7 +438,7 @@ function TabsComponent({
 			<div className="a2ui-tabs-header">
 				{tabItems.map((tab: { title: BoundValue; child: string }, index: number) => (
 					<button
-						key={index}
+						key={`${tab.child}-${index}`}
 						type="button"
 						className={`a2ui-tab-button${index === activeIndex ? ' active' : ''}`}
 						onClick={() => setActiveIndex(index)}
