@@ -7,16 +7,16 @@ MiniJS is a JavaScript-like DSL that compiles to S-expressions. It's designed to
 ### Numbers
 
 ```javascript
-42; // Integer
-3.14 - // Floating point
-  5; // Negative numbers
+42 // Integer
+3.14 // Floating point
+-5 // Negative numbers
 ```
 
 ### Strings
 
 ```javascript
-"hello"; // Double-quoted strings
-"world"; // Single-quoted strings
+"hello" // Double-quoted strings
+"world" // Single-quoted strings
 ```
 
 **Escape sequences:**
@@ -30,14 +30,14 @@ MiniJS is a JavaScript-like DSL that compiles to S-expressions. It's designed to
 ### Booleans
 
 ```javascript
-true;
-false;
+true
+false
 ```
 
 ### Null
 
 ```javascript
-null;
+null
 ```
 
 ### Arrays
@@ -81,7 +81,7 @@ null;
 ### Ternary Conditional
 
 ```javascript
-condition ? valueIfTrue : valueIfFalse;
+condition ? valueIfTrue : valueIfFalse
 ```
 
 Compiles to: `(if condition valueIfTrue valueIfFalse)`
@@ -123,13 +123,13 @@ Arrow functions compile to `(lambda (params...) body)`.
 
 ```javascript
 // Simple call
-add(1, 2);
+add(1, 2)
 
 // Nested calls
-max(abs(x), abs(y));
+max(abs(x), abs(y))
 
 // Chained calls
-map(filter(list, predicate), transform);
+map(filter(list, predicate), transform)
 ```
 
 ## Object Literals with Method Definitions
@@ -199,26 +199,20 @@ state is updated inside method bodies.
 - Use `=` for assignment (creates local binding via `define`)
 - Object compiles to: `(progn (define (method1 params) body1) (define (method2 params) body2) ...)`
 
-## Member Access
+## Property Access
 
-### Dot Notation
+### Using get() Function
 
-```javascript
-obj.property;
-obj.nested.deep.value;
-context.op;
-```
-
-### Bracket Notation
+To access object or array properties, use the `get()` built-in function:
 
 ```javascript
-arr[0];
-arr[index];
-obj["key"];
-obj[computedKey];
+get(context, "digit")  // Access object property
+get(arr, 0)            // Access array element
+get(obj, "key")        // Access with string key
+get(obj, computedKey)  // Access with computed key
 ```
 
-Both compile to `(get object property)`.
+**Note:** Dot notation (`obj.property`) is not currently supported. Use `get()` instead.
 
 ## Comments
 
@@ -232,7 +226,7 @@ Multi-line comments are not supported.
 ## Component Objects and State
 
 MiniJS programs are usually written as a single object literal. Properties declared with
-`name: value` become top-level bindings, perfect for storing UI state:
+`name: value` become object properties. To access these properties from methods, use `this`:
 
 ```javascript
 {
@@ -241,18 +235,19 @@ MiniJS programs are usually written as a single object literal. Properties decla
   history: "",
 
   action_digit(digit) {
-    if waitingForOperand {
-      display = str(digit)
-      waitingForOperand = false
+    if this.waitingForOperand {
+      this.display = str(digit)
+      this.waitingForOperand = false
     } else {
-      display = display + str(digit)
+      this.display = this.display + str(digit)
     }
   }
 }
 ```
 
-Because the evaluator preserves the environment between calls, successive invocations of
-`action_digit` mutate the same `display`/`waitingForOperand` variables.
+**Important:** Variables without `this` are local to the function. Use `this.property` to access
+object properties. The evaluator preserves the object state between calls, so successive
+invocations of `action_digit` mutate the same object properties.
 
 ## Structured Control Flow
 
@@ -300,18 +295,18 @@ test defaults to `true` when omitted.
   formatNum(n) { str(round(n * 1000000000) / 1000000000) },
 
   action_operator(op) {
-    if operator == "" {
-      memory = display
-      operator = op
-      waitingForOperand = true
-      history = display + " " + op
+    if this.operator == "" {
+      this.memory = this.display
+      this.operator = op
+      this.waitingForOperand = true
+      this.history = this.display + " " + op
     } else {
-      result = calcOp(operator, memory, display)
-      display = result
-      memory = result
-      operator = op
-      waitingForOperand = true
-      history = result + " " + op
+      result = calcOp(this.operator, this.memory, this.display)
+      this.display = result
+      this.memory = result
+      this.operator = op
+      this.waitingForOperand = true
+      this.history = result + " " + op
     }
   }
 }

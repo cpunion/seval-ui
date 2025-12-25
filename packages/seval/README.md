@@ -54,7 +54,7 @@ console.log(result2) // 10
 
   // Methods
   increment() {
-    count = count + 1
+    this.count = this.count + 1
   },
 
   // Arrow functions
@@ -63,11 +63,11 @@ console.log(result2) // 10
   // Control flow
   action(value) {
     if value > 0 {
-      display = "positive"
+      this.display = "positive"
     } elif value < 0 {
-      display = "negative"
+      this.display = "negative"
     } else {
-      display = "zero"
+      this.display = "zero"
     }
   },
 
