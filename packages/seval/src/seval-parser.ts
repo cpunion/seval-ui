@@ -251,9 +251,10 @@ export class Parser {
 				kind: 'IfStatement',
 				condition,
 				consequent,
-				alternate: this.parseElseOrElif() // Recursively handle more elif/else
+				alternate: this.parseElseOrElif(), // Recursively handle more elif/else
 			}
-		} else if (this.peek().type === TokenType.ELSE) {
+		}
+		if (this.peek().type === TokenType.ELSE) {
 			this.advance() // consume 'else'
 			this.skipNewlines()
 			return this.parseFunctionBody()

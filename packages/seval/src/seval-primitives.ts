@@ -8,8 +8,8 @@
 export type PrimitiveValue = number | string | boolean | null
 export type Value = PrimitiveValue | ValueArray | ValueObject | SFunction
 
-export interface ValueArray extends Array<Value> { }
-export interface ValueObject extends Record<string, Value> { }
+export interface ValueArray extends Array<Value> {}
+export interface ValueObject extends Record<string, Value> {}
 
 // SFunction is defined in interpreter, but we need it in the type union
 // We use a placeholder here to avoid circular dependency

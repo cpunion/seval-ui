@@ -74,7 +74,6 @@ const CALCULATOR_CODE = `{
 	}
 }`
 
-
 describe('Calculator Comprehensive Tests', () => {
 	let env: Environment
 
@@ -161,8 +160,6 @@ describe('Calculator Comprehensive Tests', () => {
 			// No changes, so result might be empty or unchanged
 			expect(result).toBeTruthy()
 		})
-
-
 	})
 
 	describe('Action: clear', () => {

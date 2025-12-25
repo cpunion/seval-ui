@@ -125,7 +125,7 @@ export class Interpreter {
 						propName = node.target.property as string
 					}
 					// Set property
-					; (object as ValueObject)[propName] = value
+					;(object as ValueObject)[propName] = value
 				}
 
 				// Assignment returns the assigned value
