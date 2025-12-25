@@ -47,7 +47,8 @@ describe('ShowcasePage', () => {
 		const incrementButtons = await within(view.container).findAllByRole('button', {
 			name: '+',
 		})
-		await user.click(incrementButtons[incrementButtons.length - 1]!)
+		const lastButton = incrementButtons[incrementButtons.length - 1]
+		if (lastButton) await user.click(lastButton)
 
 		await waitFor(
 			() => {

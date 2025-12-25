@@ -274,7 +274,8 @@ export class SevalRuntime {
         let cursor: any = clone;
 
         for (let i = 0; i < segments.length; i++) {
-            const seg = segments[i]!;
+            const seg = segments[i];
+            if (!seg) continue;
             const isLast = i === segments.length - 1;
             const segIndex = Number.isInteger(Number(seg)) ? Number(seg) : seg;
 
