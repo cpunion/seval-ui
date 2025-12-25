@@ -305,16 +305,16 @@ describe('Calculator Comprehensive Tests', () => {
 
 			let updates = executeSeval(env, 'action_operator', [], state)
 			// Apply updates
-			state = { ...state, memory: '5', operator: '+', waitingForOperand: true, history: '5 +' }
+			state = { ...state, ...(updates || {}) }
 
 			// Enter 3
 			state.context = { digit: 3 }
 			updates = executeSeval(env, 'action_digit', [], state)
-			state = { ...state, display: '3', waitingForOperand: false }
+			state = { ...state, ...(updates || {}) }
 
 			// Press equals
 			updates = executeSeval(env, 'action_equals', [], state)
-			expect(updates[0]).toEqual(['display', '8'])
+			expect(updates).toMatchObject({ display: '8' })
 		})
 
 		test('scenario: 10 - 3 * 2 = 14 (sequential operations)', () => {
@@ -330,19 +330,18 @@ describe('Calculator Comprehensive Tests', () => {
 			}
 
 			// Press -
-			executeSeval(env, 'action_operator', [], state)
-			state = { ...state, memory: '10', operator: '-', waitingForOperand: true }
+			let updates = executeSeval(env, 'action_operator', [], state)
+			state = { ...state, ...(updates || {}) }
 
 			// Enter 3
 			state.context = { digit: 3 }
-			executeSeval(env, 'action_digit', [], state)
-			state = { ...state, display: '3', waitingForOperand: false }
+			updates = executeSeval(env, 'action_digit', [], state)
+			state = { ...state, ...(updates || {}) }
 
 			// Press * (should calculate 10 - 3 = 7 first)
 			state.context = { op: '*' }
 			const result = executeSeval(env, 'action_operator', [], state)
-			expect(result[0]).toEqual(['display', '7']) // 10 - 3
-			expect(result[2]).toEqual(['operator', '*'])
+			expect(result).toMatchObject({ display: '7', operator: '*' })
 		})
 	})
 })
@@ -351,12 +350,12 @@ describe('Calculator Comprehensive Tests', () => {
 describe('Seval Primitives Coverage', () => {
 	test('array element modification', () => {
 		const code = `{
-            modifyArray(arr, idx, val) {
-				newArr = [...arr]
+			modifyArray(arr, idx, val) {
+				newArr = Array.from(arr)
 				newArr[idx] = val
 				newArr
 			}
-        }`
+		}`
 		const env = compileSeval(code)
 		const arr = [1, 2, 3]
 		const result = executeSeval(env, 'modifyArray', [arr, 1, 99])
